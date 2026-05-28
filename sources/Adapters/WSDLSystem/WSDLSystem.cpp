@@ -56,16 +56,12 @@ void WSDLSystem::Boot(int argc,char **argv) {
 
   // Tracing
   
-#ifdef _DEBUG
-  Trace::GetInstance()->SetLogger(*(new StdOutLogger()));
-#else
   Path logPath("bin:lgpt.log");
   FileLogger *fileLogger=new FileLogger(logPath);
   if(fileLogger->Init().Succeeded())
   {
-    Trace::GetInstance()->SetLogger(*fileLogger);    
+    Trace::GetInstance()->SetLogger(*fileLogger);
   }
-#endif
   
 	Config *config=Config::GetInstance() ;
 	config->ProcessArguments(argc,argv) ;

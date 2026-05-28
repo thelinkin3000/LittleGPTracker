@@ -49,6 +49,7 @@ WavFile::WavFile(I_File *file) {
 	readBuffer_=0 ;
 	readBufferSize_=0 ;
 	sampleBufferSize_=0 ;
+	isFloat_=false ;
 	file_=file ;
 } ;
 
@@ -164,11 +165,13 @@ WavFile *WavFile::Open(const char *path) {
 	memcpy(&comp,wav->readBuffer_,2) ;
 	comp = Swap16(comp);
 
-	if (comp!=1) {
-		Trace::Error("Unsupported compression") ;
+	Trace::Log("WavFile", "compression type: 0x%04X", comp) ;
+	if (comp!=1 && comp!=3 && comp!=0xFFFE) {
+		Trace::Error("Unsupported compression 0x%04X", comp) ;
 		delete wav ;
 		return 0 ;
 	}
+	wav->isFloat_ = (comp == 3) ;
 
 	// Read NumChannels (mono/Stereo)
 
@@ -177,7 +180,7 @@ WavFile *WavFile::Open(const char *path) {
 	memcpy(&nChannels,wav->readBuffer_,2) ;
 	nChannels = Swap16(nChannels);
 
-	// Read Sample rate 
+	// Read Sample rate
 
 	unsigned int sampleRate ;
 
@@ -193,16 +196,49 @@ WavFile *WavFile::Open(const char *path) {
 	position+=wav->readBlock(position,2) ;
 	memcpy(&bitPerSample,wav->readBuffer_,2) ;
 	bitPerSample = Swap16(bitPerSample);
-		
-	if ((bitPerSample!=16)&&(bitPerSample!=8)) {
-		Trace::Error("Only 8/16 bit supported") ;
-		delete wav ;
-		return 0 ;
-	} ;
-	bitPerSample/=8 ;
-	wav->bytePerSample_=bitPerSample ;
 
-	// some bad files have bigger chunks
+	if (wav->isFloat_) {
+		if (bitPerSample!=32) {
+			Trace::Error("Float WAV must be 32-bit, got %d", bitPerSample) ;
+			delete wav ;
+			return 0 ;
+		}
+		wav->bytePerSample_=4 ;
+	} else {
+		if ((bitPerSample!=16)&&(bitPerSample!=8)) {
+			Trace::Error("Only 8/16 bit supported") ;
+			delete wav ;
+			return 0 ;
+		}
+		wav->bytePerSample_=bitPerSample/8 ;
+	}
+
+	// WAVE_FORMAT_EXTENSIBLE: read extension to verify PCM sub-format
+	// Extension layout (24 bytes): cbSize(2) + wValidBitsPerSample(2) +
+	//   dwChannelMask(4) + SubFormat GUID(16, first 2 bytes = format code)
+
+	if (comp == 0xFFFE) {
+		if (offset < 24) {
+			Trace::Error("Extensible WAV: fmt chunk too small") ;
+			delete wav ;
+			return 0 ;
+		}
+		position += 2 ; // cbSize
+		position += 6 ; // wValidBitsPerSample + dwChannelMask
+		unsigned short subFormat ;
+		position += wav->readBlock(position, 2) ;
+		memcpy(&subFormat, wav->readBuffer_, 2) ;
+		subFormat = Swap16(subFormat) ;
+		if (subFormat != 1) {
+			Trace::Error("Unsupported extensible sub-format %d", subFormat) ;
+			delete wav ;
+			return 0 ;
+		}
+		position += 14 ; // rest of SubFormat GUID
+		offset -= 24 ;
+	}
+
+	// some files have bigger fmt chunks
 
 	if (offset) {
 		position+=offset ;
@@ -280,9 +316,7 @@ long WavFile::readBlock(long start,long size) {
 
 bool WavFile::GetBuffer(long start,long size) {
 
-	// compute the sample buffer size we need,
-	// allocate if needed
-
+	// output is always int16 interleaved stereo
 	int sampleBufferSize=2*channelCount_*size ;
 	if (sampleBufferSize>sampleBufferSize_) {
 		SAFE_FREE(samples_) ;
@@ -290,54 +324,65 @@ bool WavFile::GetBuffer(long start,long size) {
 		sampleBufferSize_=sampleBufferSize ;
 	}
 
-  if (!samples_)
-  {
-    Trace::Error("Failed to allocate %d samples",sampleBufferSize);
-  }
-
-	// compute the file buffer size we need to read
+	if (!samples_) {
+		Trace::Error("Failed to allocate %d samples",sampleBufferSize);
+		return false ;
+	}
 
 	int bufferSize=size*channelCount_*bytePerSample_ ;
 	int bufferStart=dataPosition_+start*channelCount_*bytePerSample_ ;
 
-	// Read the buffer but in small chunk to let the system breathe
-	// if the files are big
-
-	int count=bufferSize ;
-	int offset=0 ;
-	char *ptr=(char *)samples_ ;
-	int readSize =
-   (bufferChunkSize_>0) 
-   ? bufferChunkSize_
-   : count>4096?4096:count;
-
-	while (count>0) {
-		readSize=(count>readSize)?readSize:count ;
-		readBlock(bufferStart,readSize) ;
-		memcpy(ptr+offset,readBuffer_,readSize) ;
-		bufferStart+=readSize ;
-		count-=readSize ;
-		offset+=readSize ;
-		if (bufferChunkSize_>0) TimeService::GetInstance()->Sleep(1) ;
-	}
-
-
-        // expand 8 bit data if needed
-
-	unsigned char *src=(unsigned char *)samples_ ;
-	short *dst=samples_ ;
-	for (int i=size-1;i>=0;i--) {
-		if (bytePerSample_==1) {
-			dst[i]=(src[i]-128)*256 ;
-		} else {
-			*dst=Swap16(*dst) ;
-			dst++ ;
-			if (channelCount_>1) {
+	if (isFloat_) {
+		// Read float data into readBuffer_ in chunks, convert to int16 in samples_
+		int totalSamples=size*channelCount_ ;
+		int chunkSamples=(bufferChunkSize_>0) ? (bufferChunkSize_/4) : 1024 ;
+		if (chunkSamples<1) chunkSamples=1 ;
+		int remaining=totalSamples ;
+		int outOffset=0 ;
+		while (remaining>0) {
+			int batch=(remaining<chunkSamples)?remaining:chunkSamples ;
+			readBlock(bufferStart, batch*4) ;
+			float *fsrc=(float *)readBuffer_ ;
+			for (int i=0;i<batch;i++) {
+				float v=fsrc[i] ;
+				if (v> 1.0f) v= 1.0f ;
+				if (v<-1.0f) v=-1.0f ;
+				samples_[outOffset++]=(short)(v*32767.0f) ;
+			}
+			bufferStart+=batch*4 ;
+			remaining-=batch ;
+			if (bufferChunkSize_>0) TimeService::GetInstance()->Sleep(1) ;
+		}
+	} else {
+		// PCM path: read raw bytes then expand 8-bit in-place
+		int count=bufferSize ;
+		int offset=0 ;
+		char *ptr=(char *)samples_ ;
+		int readSize=(bufferChunkSize_>0) ? bufferChunkSize_ : (count>4096?4096:count) ;
+		while (count>0) {
+			readSize=(count>readSize)?readSize:count ;
+			readBlock(bufferStart,readSize) ;
+			memcpy(ptr+offset,readBuffer_,readSize) ;
+			bufferStart+=readSize ;
+			count-=readSize ;
+			offset+=readSize ;
+			if (bufferChunkSize_>0) TimeService::GetInstance()->Sleep(1) ;
+		}
+		unsigned char *src=(unsigned char *)samples_ ;
+		short *dst=samples_ ;
+		for (int i=size-1;i>=0;i--) {
+			if (bytePerSample_==1) {
+				dst[i]=(src[i]-128)*256 ;
+			} else {
 				*dst=Swap16(*dst) ;
 				dst++ ;
+				if (channelCount_>1) {
+					*dst=Swap16(*dst) ;
+					dst++ ;
+				}
 			}
 		}
-	} 
+	}
 	return true ;
 } ;
 

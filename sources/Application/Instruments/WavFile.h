@@ -32,7 +32,8 @@ private:
 	int size_ ; // number of samples
 	int sampleRate_ ; // sample rate
 	int channelCount_ ; // mono / stereo
-	int bytePerSample_ ; // original file is in 8/16bit
+	int bytePerSample_ ; // original file bytes per sample (1, 2, or 4 for float)
+	bool isFloat_ ;      // true for WAVE_FORMAT_IEEE_FLOAT (0x0003)
 	int dataPosition_ ; // offset in file to get to data
 
 	static int bufferChunkSize_ ;
