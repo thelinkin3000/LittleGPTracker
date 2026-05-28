@@ -1,13 +1,19 @@
 // VC6GUI.cpp : Defines the entry point for the application.
 //
 
+#include <windows.h>
 #include "Application/Application.h"
 #include "Adapters/WSDLSystem/WSDLSystem.h"
 #include "Externals/SDL/SDL.h"
 #include "Adapters/SDL/GUI/SDLGUIWindowImp.h"
 #include <string.h>
 
-int main(int argc,char *argv[]) 
+// SDL.h renames main→SDL_main. We provide WinMain ourselves so sdlmain.lib is not needed.
+int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
+    return SDL_main(__argc, __argv);
+}
+
+int main(int argc,char *argv[])
 {
 	bool fullscreen=false ;
 	if (argc>1) {

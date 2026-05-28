@@ -26,3 +26,5 @@ projects/lgpt-garlic.elf
 projects/lgpt-garlicplus.elf
 projects/lgpt-rg35xxplus.elf
 projects/LittleGPTracker.app
+projects/.vs
+projects/lgpt.vcxproj.user

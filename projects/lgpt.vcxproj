@@ -30,22 +30,27 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='demo_sane|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v145</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Demo|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v145</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Rendered|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v145</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v145</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v145</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -97,7 +102,6 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>../sources/Externals;../sources/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;__WINDOWS_DS__;__WINDOWS_ASIO__;_CRT_SECURE_NO_WARNINGS;__WINDOWS_MM__;CPP_MEMORY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <BufferSecurityCheck>true</BufferSecurityCheck>
@@ -107,8 +111,8 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalOptions>/fixed:no %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>sdlmain.lib;sdl.lib;winmm.lib;dsound.lib;SDL_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/fixed:no /SAFESEH:NO %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>sdl.lib;winmm.lib;dsound.lib;SDL_image.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)lgptd.exe</OutputFile>
       <AdditionalLibraryDirectories>../libs/WSDL;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -134,8 +138,8 @@
       </DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalOptions>/fixed:no %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>sdlmain-release.lib;sdl-release.lib;winmm.lib;dsound.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/fixed:no /SAFESEH:NO %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>sdl-release.lib;winmm.lib;dsound.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)lgpt.exe</OutputFile>
       <AdditionalLibraryDirectories>../libs/WSDL;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -237,6 +241,7 @@
     <ClCompile Include="..\sources\Adapters\RTAudio\RTAudioStub.cpp" />
     <ClCompile Include="..\sources\Adapters\W32\Audio\W32Audio.cpp" />
     <ClCompile Include="..\sources\Adapters\W32\Audio\W32AudioDriver.cpp" />
+    <ClCompile Include="..\sources\Adapters\RTMidi\RTMidiInDevice.cpp" />
     <ClCompile Include="..\sources\Adapters\RTMidi\RTMidiOutDevice.cpp" />
     <ClCompile Include="..\sources\Adapters\RTMidi\RTMidiService.cpp" />
     <ClCompile Include="..\sources\Adapters\Sdl\Gui\GUIFactory.cpp" />
@@ -246,8 +251,11 @@
     <ClCompile Include="..\sources\System\FileSystem\FileSystem.cpp" />
     <ClCompile Include="..\sources\System\io\Status.cpp" />
     <ClCompile Include="..\sources\System\Timer\Timer.cpp" />
-    <ClCompile Include="..\sources\System\io\Trace.cpp" />
+    <ClCompile Include="..\sources\System\Console\Trace.cpp" />
+    <ClCompile Include="..\sources\System\Console\Logger.cpp" />
     <ClCompile Include="..\sources\System\Process\Process.cpp" />
+    <ClCompile Include="..\sources\System\Process\SysMutex.cpp" />
+    <ClCompile Include="..\sources\System\Errors\Result.cpp" />
     <ClCompile Include="..\sources\Foundation\Observable.cpp" />
     <ClCompile Include="..\sources\Foundation\SingletonRegistry.cpp" />
     <ClCompile Include="..\sources\Foundation\Variables\Variable.cpp" />
@@ -296,11 +304,12 @@
     <ClCompile Include="..\sources\Application\Views\BaseClasses\UITempoField.cpp" />
     <ClCompile Include="..\sources\Application\views\BaseClasses\View.cpp" />
     <ClCompile Include="..\sources\Application\views\BaseClasses\ViewEvent.cpp" />
+    <ClCompile Include="..\sources\Application\Views\ModalDialogs\CommandSelectorModal.cpp" />
     <ClCompile Include="..\sources\Application\Views\ModalDialogs\ImportSampleDialog.cpp" />
     <ClCompile Include="..\sources\Application\Views\ModalDialogs\MessageBox.cpp" />
     <ClCompile Include="..\sources\Application\Views\ModalDialogs\NewProjectDialog.cpp" />
     <ClCompile Include="..\sources\Application\Views\ModalDialogs\SelectProjectDialog.cpp" />
-    <ClCompile Include="..\sources\Application\utils\assert.cpp" />
+    <ClCompile Include="..\sources\System\Console\n_assert.cpp" />
     <ClCompile Include="..\sources\Application\utils\char.cpp" />
     <ClCompile Include="..\sources\Application\utils\fixed.cpp" />
     <ClCompile Include="..\sources\Application\utils\HexBuffers.cpp" />
@@ -338,6 +347,7 @@
     <ClCompile Include="..\sources\UIFramework\BasicDatas\GUIEvent.cpp" />
     <ClCompile Include="..\sources\UIFramework\BasicDatas\GUIRect.cpp" />
     <ClCompile Include="..\sources\UIFramework\Interfaces\I_GUIWindowImp.cpp" />
+    <ClCompile Include="..\sources\UIFramework\SimpleBaseClasses\EventManager.cpp" />
     <ClCompile Include="..\sources\UIFramework\SimpleBaseClasses\GUIWindow.cpp" />
     <ClCompile Include="..\sources\Externals\TinyXML\Tiny2NosStub.cpp" />
     <ClCompile Include="..\sources\Externals\TinyXML\tinystr.cpp" />
@@ -365,7 +375,9 @@
     <ClCompile Include="..\sources\Services\Audio\AudioMixer.cpp" />
     <ClCompile Include="..\sources\Services\Audio\AudioOut.cpp" />
     <ClCompile Include="..\sources\Services\Audio\AudioOutDriver.cpp" />
+    <ClCompile Include="..\sources\Services\Midi\MidiChannel.cpp" />
     <ClCompile Include="..\sources\Services\Midi\MidiInDevice.cpp" />
+    <ClCompile Include="..\sources\Services\Midi\MidiInMerger.cpp" />
     <ClCompile Include="..\sources\Services\Midi\MidiOutDevice.cpp" />
     <ClCompile Include="..\sources\Services\Midi\MidiService.cpp" />
     <ClCompile Include="..\sources\Services\Controllers\ButtonControllerSource.cpp" />
@@ -374,6 +386,7 @@
     <ClCompile Include="..\sources\Services\Controllers\ControllerService.cpp" />
     <ClCompile Include="..\sources\Services\Controllers\ControllerSource.cpp" />
     <ClCompile Include="..\sources\Services\Controllers\ControlNode.cpp" />
+    <ClCompile Include="..\sources\Services\Controllers\HatControllerSource.cpp" />
     <ClCompile Include="..\sources\Services\Controllers\JoystickControllerSource.cpp" />
     <ClCompile Include="..\sources\Services\Controllers\KeyboardControllerSource.cpp" />
     <ClCompile Include="..\sources\Services\Controllers\MultiChannelAdapter.cpp" />
@@ -411,7 +424,7 @@
     <ClInclude Include="..\sources\Application\Model\Song.h" />
     <ClInclude Include="..\sources\Application\Model\Table.h" />
     <ClInclude Include="..\sources\Application\Model\Scale.h" />
-    <ClCompile Include="..\sources\UIFramework\BasicDatas\FontConfig.h" />
+    <ClInclude Include="..\sources\UIFramework\BasicDatas\FontConfig.h" />
     <ClInclude Include="..\sources\Application\views\ChainView.h" />
     <ClInclude Include="..\sources\Application\views\ConsoleView.h" />
     <ClInclude Include="..\sources\Application\views\GrooveView.h" />
