@@ -92,7 +92,7 @@ void WSDLSystem::Boot(int argc,char **argv) {
 	SysProcessFactory::Install(new SDLProcessFactory()) ;
 
 	// SDL3: SDL_INIT_TIMER removed; timer subsystem is always available
-	if ( !SDL_Init(SDL_INIT_VIDEO|SDL_INIT_JOYSTICK) ) {
+	if ( !SDL_Init(SDL_INIT_VIDEO|SDL_INIT_JOYSTICK|SDL_INIT_AUDIO) ) {
 		return;
 	}
 	SDL_HideCursor();

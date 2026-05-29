@@ -25,9 +25,16 @@ SDLAudioDriverThread::SDLAudioDriverThread(SDLAudioDriver *driver) {
 };
 
 bool SDLAudioDriverThread::Execute() {
+    static int threadCount_ = 0;
+    Trace::Log("AUDIO","driver thread started");
     while (!shouldTerminate()) {
         semaphore_->Wait();
+        int n = ++threadCount_;
+        if (n <= 5 || n % 100 == 0)
+            Trace::Log("AUDIO","thread wake #%d, calling OnNewBufferNeeded", n);
         driver_->OnNewBufferNeeded();
+        if (n <= 5 || n % 100 == 0)
+            Trace::Log("AUDIO","thread wake #%d, OnNewBufferNeeded done", n);
     };
     SysSemaphore *semaphore = semaphore_;
     semaphore_ = 0;
@@ -156,22 +163,28 @@ void SDLAudioDriver::OnChunkDone(Uint8 *stream, int len) {
         memmove(mainBuffer_, mainBuffer_ + bufferPos_,
                 bufferSize_ - bufferPos_);
 
-        if (pool_[poolPlayPosition_].buffer_ == 0) {
+        // Acquire load: ensures we see all data written before the release store in AddBuffer()
+        char *slotBuf = pool_[poolPlayPosition_].buffer_.load(std::memory_order_acquire);
+        if (slotBuf == 0) {
+            static int underrunCount = 0;
+            underrunCount++;
+            if (underrunCount <= 10 || underrunCount % 100 == 0)
+                Trace::Log("AUDIO", "pool underrun #%d at pos=%d", underrunCount, poolPlayPosition_);
             SYS_MEMCPY(mainBuffer_+bufferSize_-bufferPos_, miniBlank_, fragSize_);
             bufferSize_=bufferSize_-bufferPos_+fragSize_ ;
             bufferPos_ = 0;
         } else {
             memcpy(mainBuffer_ + bufferSize_ - bufferPos_,
-                   pool_[poolPlayPosition_].buffer_,
+                   slotBuf,
                    pool_[poolPlayPosition_].size_);
 
             bufferSize_ =
                 bufferSize_ - bufferPos_ + pool_[poolPlayPosition_].size_;
             bufferPos_ = 0;
 
-            SYS_FREE(pool_[poolPlayPosition_].buffer_);
-
-            pool_[poolPlayPosition_].buffer_ = 0;
+            SYS_FREE(slotBuf);
+            // Release store: signal to producer that this slot is free
+            pool_[poolPlayPosition_].buffer_.store(0, std::memory_order_release);
             poolPlayPosition_ = (poolPlayPosition_ + 1) % SOUND_BUFFER_COUNT;
             if (thread_)
                 thread_->Notify();

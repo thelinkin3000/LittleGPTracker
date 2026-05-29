@@ -122,7 +122,10 @@ void Player::Start(PlayMode mode,bool forceSongMode) {
 
 	firstPlayCycle_=true ;
 	mode_=viewData_->playMode_ ;
-	
+
+	Trace::Log("PLAYER","Start mode=%d songX=%d songY=%d chainRow=%d playPos=%d",
+		mode_, viewData_->songX_, viewData_->songY_, viewData_->chainRow_, playPos);
+
 	mixer_->OnPlayerStart() ;
 
 	MidiService *ms=MidiService::GetInstance() ;
@@ -498,13 +501,18 @@ void Player::QueueChannel(int i,QueueingMode mode,unsigned char position,unsigne
 void Player::Update(Observable &o,I_ObservableData *d) {
 
 	static int updateCount_ = 0;
-	if (updateCount_++ == 0 && Config::GetInstance()->GetValue("log-audio"))
+	bool logAudio = (Config::GetInstance()->GetValue("log-audio") != 0);
+	if (updateCount_++ == 0 && logAudio)
 	  Trace::Log("PLAYER","Update first call");
 
 	// Make sure sync's ok
 
 	MidiService::GetInstance()->Trigger() ;
 	project_->Trigger() ;
+
+	if (!isRunning_ && logAudio && (updateCount_ % 500 == 0)) {
+		Trace::Log("PLAYER","Update called but not running (count=%d)", updateCount_);
+	}
 
 	if (isRunning_) {
 
@@ -777,11 +785,13 @@ void Player::updateChainPos(int pos,int channel,int hop) {
 		viewData_->currentPlayPhrase_[channel]=*data ;
 		if (*data==0xFF) { // This could happen if starting in song mode on a row
 			               // where a chain contains no phrase
+			Trace::Log("PLAYER","updateChainPos: no phrase in chain=%d pos=%d ch=%d, stopping", chain, pos, channel);
 			mixer_->StopChannel(channel) ;
-		} 
+		}
 	} else {
 		viewData_->currentPlayPhrase_[channel]=0xFF;
 		mixer_->StopChannel(channel) ;
+		Trace::Log("PLAYER","updateChainPos: no chain for ch=%d pos=%d, stopping", channel, pos);
 	};
 	updatePhrasePos((hop>=0)?hop:0,channel) ;
 }
@@ -799,6 +809,9 @@ void Player::updatePhrasePos(int pos,int channel) {
 	timeToStart_[channel]=1 ;
 
 	uchar phrase=viewData_->currentPlayPhrase_[channel] ;
+
+	// Guard: phrase 0xFF means no phrase assigned; skip DLAY check to avoid OOB access
+	if (phrase==0xFF) return ;
 
 	// Check both param colum 1 & 2
 

@@ -3,12 +3,13 @@
 
 #include "Foundation/Observable.h"
 #include "AudioSettings.h"
+#include <atomic>
 
 #define SOUND_BUFFER_COUNT 50
 #define SOUND_BUFFER_MAX 20000
 
 struct AudioBufferData {
-   char *buffer_ ;
+   std::atomic<char*> buffer_ ;
    int size_ ;
    void *driverData_ ;
 } ;
