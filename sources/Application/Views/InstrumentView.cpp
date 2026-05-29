@@ -1,6 +1,7 @@
 #include "InstrumentView.h"
 #include "Application/Instruments/MidiInstrument.h"
 #include "Application/Instruments/SampleInstrument.h"
+#include "Application/Instruments/SynthInstrument.h"
 #include "Application/Instruments/SamplePool.h"
 #include "Application/Model/Config.h"
 #include "BaseClasses/UIBigHexVarField.h"
@@ -54,6 +55,10 @@ void InstrumentView::onInstrumentChange() {
 		case IT_SAMPLE:
 			fillSampleParameters() ;
 			break ;
+		case IT_SYNTH:
+			fillSynthParameters() ;
+			break ;
+		default: break ;
 	} ;
 
 	SetFocus(T_SimpleList<UIField>::GetFirst()) ;
@@ -480,4 +485,113 @@ void InstrumentView::OnFocus() { onInstrumentChange(); }
 
 void InstrumentView::Update(Observable &o,I_ObservableData *d) {
 	onInstrumentChange() ;
+}
+
+void InstrumentView::fillSynthParameters() {
+    int i=viewData_->currentInstrument_ ;
+    InstrumentBank *bank=viewData_->project_->GetInstrumentBank() ;
+    SynthInstrument *instr=(SynthInstrument *)bank->GetInstrument(i) ;
+    GUIPoint position=GetAnchor() ;
+
+    Variable *v=instr->FindVariable(SYIP_VOL) ;
+    UIIntVarField *f=new UIIntVarField(position,*v,"volume: %d",0,255,1,16) ;
+    T_SimpleList<UIField>::Insert(f) ;
+    f->SetFocus() ;
+
+    position._y+=2 ;
+    v=instr->FindVariable(SYIP_O1WV) ;
+    f=new UIIntVarField(position,*v,"osc1: %s",0,SWF_LAST-1,1,1) ;
+    T_SimpleList<UIField>::Insert(f) ;
+
+    position._y+=1 ;
+    v=instr->FindVariable(SYIP_O2WV) ;
+    f=new UIIntVarField(position,*v,"osc2: %s",0,SO2_LAST-1,1,1) ;
+    T_SimpleList<UIField>::Insert(f) ;
+
+    position._x+=10 ;
+    v=instr->FindVariable(SYIP_O2DT) ;
+    f=new UIIntVarField(position,*v,"det:%2.2X",0,255,1,16) ;
+    T_SimpleList<UIField>::Insert(f) ;
+    position._x-=10 ;
+
+    position._y+=1 ;
+    v=instr->FindVariable(SYIP_O2MX) ;
+    f=new UIIntVarField(position,*v,"osc2 mix: %2.2X",0,255,1,16) ;
+    T_SimpleList<UIField>::Insert(f) ;
+
+    position._y+=2 ;
+    v=instr->FindVariable(SYIP_NLEN) ;
+    f=new UIIntVarField(position,*v,"length: %2.2X",0,255,1,16) ;
+    T_SimpleList<UIField>::Insert(f) ;
+
+    position._y+=1 ;
+    UIStaticField *sf=new UIStaticField(position,"A D S R:") ;
+    T_SimpleList<UIField>::Insert(sf) ;
+
+    position._y+=1 ;
+    v=instr->FindVariable(SYIP_EATK) ;
+    f=new UIIntVarField(position,*v,"%2.2X",0,255,1,16) ;
+    T_SimpleList<UIField>::Insert(f) ;
+    position._x+=3 ;
+    v=instr->FindVariable(SYIP_EDEC) ;
+    f=new UIIntVarField(position,*v,"%2.2X",0,255,1,16) ;
+    T_SimpleList<UIField>::Insert(f) ;
+    position._x+=3 ;
+    v=instr->FindVariable(SYIP_ESUS) ;
+    f=new UIIntVarField(position,*v,"%2.2X",0,255,1,16) ;
+    T_SimpleList<UIField>::Insert(f) ;
+    position._x+=3 ;
+    v=instr->FindVariable(SYIP_EREL) ;
+    f=new UIIntVarField(position,*v,"%2.2X",0,255,1,16) ;
+    T_SimpleList<UIField>::Insert(f) ;
+    position._x-=9 ;
+
+    position._y+=2 ;
+    UIStaticField *sf2=new UIStaticField(position,"flt cut/res:") ;
+    T_SimpleList<UIField>::Insert(sf2) ;
+    position._x+=13 ;
+    v=instr->FindVariable(SYIP_FCUT) ;
+    f=new UIIntVarField(position,*v,"%2.2X",0,255,1,16) ;
+    T_SimpleList<UIField>::Insert(f) ;
+    position._x+=3 ;
+    v=instr->FindVariable(SYIP_FRES) ;
+    f=new UIIntVarField(position,*v,"%2.2X",0,255,1,16) ;
+    T_SimpleList<UIField>::Insert(f) ;
+    position._x-=16 ;
+
+    position._y+=1 ;
+    v=instr->FindVariable(SYIP_FMOD) ;
+    f=new UIIntVarField(position,*v,"flt mode: %s",0,SFM_LAST-1,1,1) ;
+    T_SimpleList<UIField>::Insert(f) ;
+
+    position._y+=1 ;
+    v=instr->FindVariable(SYIP_FEAT) ;
+    f=new UIIntVarField(position,*v,"flt env atk: %2.2X",0,255,1,16) ;
+    T_SimpleList<UIField>::Insert(f) ;
+    position._y+=1 ;
+    v=instr->FindVariable(SYIP_FEAM) ;
+    f=new UIIntVarField(position,*v,"flt env amt: %2.2X",0,255,1,16) ;
+    T_SimpleList<UIField>::Insert(f) ;
+
+    position._y+=2 ;
+    v=instr->FindVariable(SYIP_LRAT) ;
+    f=new UIIntVarField(position,*v,"lfo rate: %2.2X",0,255,1,16) ;
+    T_SimpleList<UIField>::Insert(f) ;
+    position._y+=1 ;
+    v=instr->FindVariable(SYIP_LDPT) ;
+    f=new UIIntVarField(position,*v,"lfo depth: %2.2X",0,255,1,16) ;
+    T_SimpleList<UIField>::Insert(f) ;
+    position._y+=1 ;
+    v=instr->FindVariable(SYIP_LDST) ;
+    f=new UIIntVarField(position,*v,"lfo dest: %s",0,SLD_LAST-1,1,1) ;
+    T_SimpleList<UIField>::Insert(f) ;
+
+    position._y+=2 ;
+    v=instr->FindVariable(SYIP_TBLA) ;
+    f=new UIIntVarField(position,*v,"automation: %s",0,1,1,1) ;
+    T_SimpleList<UIField>::Insert(f) ;
+    position._y+=1 ;
+    v=instr->FindVariable(SYIP_TABL) ;
+    f=new UIIntVarOffField(position,*v,"table: %2.2X",0x00,0x7F,1,16) ;
+    T_SimpleList<UIField>::Insert(f) ;
 }

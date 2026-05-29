@@ -3,6 +3,7 @@
 #include "Application/Instruments/SampleInstrument.h"
 #include "Application/Instruments/SamplePool.h"
 #include "Application/Instruments/MidiInstrument.h"
+#include "Application/Instruments/SynthInstrument.h"
 #include "System/io/Status.h"
 #include "Application/Utils/char.h"
 #include "Application/Model/Config.h"
@@ -11,7 +12,8 @@
 
 char *InstrumentTypeData[IT_LAST]= {
 	"Sample",
-	"Midi"
+	"Midi",
+	"Synth"
 } ;
 
 
@@ -27,6 +29,10 @@ InstrumentBank::InstrumentBank():Persistent("INSTRUMENTBANK") {
         MidiInstrument *s=new MidiInstrument() ;
         s->SetChannel(i) ;
         instrument_[MAX_SAMPLEINSTRUMENT_COUNT+i]=s ;
+    }
+	for (int i=0;i<MAX_SYNTHINSTRUMENT_COUNT;i++) {
+        SynthInstrument *s=new SynthInstrument() ;
+        instrument_[MAX_SAMPLEINSTRUMENT_COUNT+MAX_MIDIINSTRUMENT_COUNT+i]=s ;
     }
     Status::Set("All instrument loaded") ;
 } ;
@@ -119,7 +125,9 @@ void InstrumentBank::RestoreContent(TiXmlElement *element) {
 					}
 				}
 			} else {
-				it=(id<MAX_SAMPLEINSTRUMENT_COUNT)?IT_SAMPLE:IT_MIDI ;
+				if (id<MAX_SAMPLEINSTRUMENT_COUNT) it=IT_SAMPLE;
+				else if (id<MAX_SAMPLEINSTRUMENT_COUNT+MAX_MIDIINSTRUMENT_COUNT) it=IT_MIDI;
+				else it=IT_SYNTH;
 			} ;
 			if (id<MAX_INSTRUMENT_COUNT) {
         I_Instrument *instr=instrument_[id] ;
@@ -132,6 +140,10 @@ void InstrumentBank::RestoreContent(TiXmlElement *element) {
 						case IT_MIDI:
 							instr=new MidiInstrument() ;
 							break ;
+						case IT_SYNTH:
+							instr=new SynthInstrument() ;
+							break ;
+						default: break ;
 					}
 					instrument_[id]=instr ;
 				} ;
@@ -219,8 +231,12 @@ unsigned short InstrumentBank::Clone(unsigned short i) {
 		return NO_MORE_INSTRUMENT ;
 	}
 
+	if (src->GetType()==IT_SYNTH||src->GetType()==IT_MIDI) {
+		return NO_MORE_INSTRUMENT ;
+	}
+
 	delete dst ;
-  
+
 	if (src->GetType()==IT_SAMPLE) {
 		dst=new SampleInstrument() ;
 	} else {
@@ -244,4 +260,5 @@ void InstrumentBank::OnStart() {
 		instrument_[i]->OnStart() ;
 	}
 	init_filters() ;
+	SynthInstrument::BuildNoteTable() ;
 } ;

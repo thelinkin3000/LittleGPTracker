@@ -1,6 +1,7 @@
 
 #include "RTAudioDriver.h"
 #include "Adapters/W32/Midi/W32MidiService.h"
+#include "Application/Model/Config.h"
 #include "Application/Player/SyncMaster.h"
 #include "Services/Audio/Audio.h"
 #include "Services/Time/TimeService.h"
@@ -26,8 +27,12 @@ bool RTAudioDriverThread::Execute() {
     int bufferSize = Audio::GetInstance()->GetAudioBufferSize();
     float cycleTime = bufferSize / 44100.0f;
     TimeService *ts = TimeService::GetInstance();
+    bool logAudio = Config::GetInstance()->GetValue("log-audio") != 0;
+    if (logAudio) Trace::Log("AUDIO","RTAudioDriverThread running");
+    int callCount = 0;
     while (!shouldTerminate()) {
         semaphore_->Wait();
+        if (logAudio && callCount++ == 0) Trace::Log("AUDIO","AudioThread first buffer request");
         float before = float(ts->GetTime());
         driver_->OnNewBufferNeeded();
         float delta = float(ts->GetTime() - before); // in secs

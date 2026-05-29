@@ -76,7 +76,7 @@ const char *Config::GetValue(const char *key)
 
 //------------------------------------------------------------------------------
 
-void Config::ProcessArguments(int argc,char **argv) 
+void Config::ProcessArguments(int argc,char **argv)
 {
 	for (int i=1;i<argc;i++) {
 		char *pos ;
@@ -89,6 +89,12 @@ void Config::ProcessArguments(int argc,char **argv)
 				v->SetString(pos+1) ;
 			} else {
 				Variable *v=new Variable(arg,0,pos+1) ;
+				Insert(v) ;
+			}
+		} else if (*arg) {
+			// bare flag (e.g. --log-audio): store as key="1"
+			if (!FindVariable(arg)) {
+				Variable *v=new Variable(arg,0,"1") ;
 				Insert(v) ;
 			}
 		}

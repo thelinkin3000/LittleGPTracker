@@ -1,7 +1,9 @@
 #include "Player.h"
 #include "Application/Views/BaseClasses/ViewEvent.h"
+#include "Application/Model/Config.h"
 #include "System/io/Status.h"
 #include "System/System/System.h"
+#include "System/Console/Trace.h"
 #include "Application/Instruments/CommandList.h"
 #include "Application/Instruments/I_Instrument.h"
 #include "Application/Utils/char.h"
@@ -494,6 +496,10 @@ void Player::QueueChannel(int i,QueueingMode mode,unsigned char position,unsigne
  ************************************************************/
 
 void Player::Update(Observable &o,I_ObservableData *d) {
+
+	static int updateCount_ = 0;
+	if (updateCount_++ == 0 && Config::GetInstance()->GetValue("log-audio"))
+	  Trace::Log("PLAYER","Update first call");
 
 	// Make sure sync's ok
 

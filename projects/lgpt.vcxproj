@@ -326,6 +326,7 @@
     <ClCompile Include="..\sources\Application\Instruments\InstrumentBank.cpp" />
     <ClCompile Include="..\sources\Application\Instruments\MidiInstrument.cpp" />
     <ClCompile Include="..\sources\Application\Instruments\SampleInstrument.cpp" />
+    <ClCompile Include="..\sources\Application\Instruments\SynthInstrument.cpp" />
     <ClCompile Include="..\sources\Application\Instruments\SamplePool.cpp" />
     <ClCompile Include="..\sources\Application\Instruments\SampleVariable.cpp" />
     <ClCompile Include="..\sources\Application\Instruments\SoundFontManager.cpp" />

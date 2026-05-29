@@ -128,7 +128,10 @@ void MixerService::Update(Observable &o,I_ObservableData *d)  {
 
   AudioDriver::Event *event=(AudioDriver::Event *)d;
   if (event->type_ == AudioDriver::Event::ADET_BUFFERNEEDED)
-  {  
+  {
+    static int mixCount_ = 0;
+    if (mixCount_++ == 0 && Config::GetInstance()->GetValue("log-audio"))
+      Trace::Log("MIXER","first BUFFERNEEDED event");
     Lock() ;
     SetChanged() ;
     NotifyObservers() ;
