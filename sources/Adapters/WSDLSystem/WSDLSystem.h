@@ -2,7 +2,6 @@
 #define _WSDL_SYSTEM_H_
 
 #include "System/System/System.h"
-#include "Externals/SDL/SDL.h"
 #include <string>
 #include "UIFramework/SimpleBaseClasses/EventManager.h"
 

@@ -33,18 +33,23 @@ bool SysMutex::Lock() {
 }
 
 bool SysMutex::TryLock() {
-#ifndef SDL2
-    // SDL1 generally means single-threaded older builds
-    return true;
-#else
+#if defined(SDL2) || defined(SDL3)
     if (!mutex_) {
         mutex_ = SDL_CreateMutex();
     }
     if (mutex_) {
-        // Returns 0 on Successs
+#ifdef SDL3
+        // SDL3: SDL_TryLockMutex returns bool (true = success)
+        return SDL_TryLockMutex(mutex_);
+#else
+        // SDL2: returns 0 on success
         return !SDL_TryLockMutex(mutex_);
+#endif
     }
     return false;
+#else
+    // SDL1 generally means single-threaded older builds
+    return true;
 #endif
 }
 

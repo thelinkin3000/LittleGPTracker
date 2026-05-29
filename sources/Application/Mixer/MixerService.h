@@ -3,6 +3,8 @@
 
 #ifdef SDL2
 #include <SDL2/SDL.h>
+#elif defined(SDL3)
+#include <SDL3/SDL.h>
 #else
 #include <SDL/SDL.h>
 #endif
@@ -68,7 +70,11 @@ private:
   MixBus master_;
   MixBus bus_[MAX_BUS_COUNT];
   MixerServiceRenderMode mode_;
+#ifdef SDL3
+  SDL_Mutex *sync_;
+#else
   SDL_mutex *sync_;
+#endif
   bool isRendering_;
 } ;
 #endif

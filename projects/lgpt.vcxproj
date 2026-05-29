@@ -21,6 +21,14 @@
       <Configuration>Rendered</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|ARM64">
+      <Configuration>Debug</Configuration>
+      <Platform>ARM64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM64">
+      <Configuration>Release</Configuration>
+      <Platform>ARM64</Platform>
+    </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{AA286D27-4C78-44DD-B559-F08A533C5935}</ProjectGuid>
@@ -52,6 +60,16 @@
     <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v145</PlatformToolset>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v145</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v145</PlatformToolset>
+  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
@@ -75,6 +93,12 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
@@ -96,6 +120,14 @@
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='demo_sane|Win32'">false</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='demo_sane|Win32'">false</GenerateManifest>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">lgptd</TargetName>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">../bin\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">../build/Debug-ARM64\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">true</LinkIncremental>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">lgptd</TargetName>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">../bin\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">../build/Release-ARM64\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">false</GenerateManifest>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -153,6 +185,54 @@
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\sources\Externals;$(ProjectDir)..\sources\;$(ProjectDir)..\libs\SDL3\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;__WINDOWS_MM__;_CRT_SECURE_NO_WARNINGS;CPP_MEMORY;SDL3;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>SDL3.lib;winmm.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)lgptd.exe</OutputFile>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\libs\SDL3\lib\arm64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(OutDir)lgpt.pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineARM64</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
+    <ClCompile>
+      <Optimization>Full</Optimization>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\sources\Externals;$(ProjectDir)..\sources\;$(ProjectDir)..\libs\SDL3\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;__WINDOWS_MM__;_CRT_SECURE_NO_WARNINGS;CPP_MEMORY;SDL3;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>SDL3.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)lgpt.exe</OutputFile>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\libs\SDL3\lib\arm64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineARM64</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Rendered|Win32'">
@@ -236,20 +316,29 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\sources\Adapters\W32FileSystem\W32FileSystem.cpp" />
-    <ClCompile Include="..\sources\Adapters\W32\Process\W32Process.cpp" />
     <ClCompile Include="..\sources\Adapters\W32\Main\WSDLmain.cpp" />
     <ClCompile Include="..\sources\Adapters\WSDLSystem\WSDLSystem.cpp" />
-    <ClCompile Include="..\sources\Adapters\RTAudio\RTAudioDriver.cpp" />
-    <ClCompile Include="..\sources\Adapters\RTAudio\RTAudioStub.cpp" />
-    <ClCompile Include="..\sources\Adapters\W32\Audio\W32Audio.cpp" />
-    <ClCompile Include="..\sources\Adapters\W32\Audio\W32AudioDriver.cpp" />
     <ClCompile Include="..\sources\Adapters\RTMidi\RTMidiInDevice.cpp" />
     <ClCompile Include="..\sources\Adapters\RTMidi\RTMidiOutDevice.cpp" />
     <ClCompile Include="..\sources\Adapters\RTMidi\RTMidiService.cpp" />
-    <ClCompile Include="..\sources\Adapters\Sdl\Gui\GUIFactory.cpp" />
-    <ClCompile Include="..\sources\Adapters\Sdl\Gui\SDLEventManager.cpp" />
-    <ClCompile Include="..\sources\Adapters\Sdl\Gui\SDLGUIWindowImp.cpp" />
-    <ClCompile Include="..\sources\Adapters\W32\Timer\W32Timer.cpp" />
+    <!-- Win32-only adapter files (SDL1 + DirectSound/MMSYSTEM audio) -->
+    <ClCompile Include="..\sources\Adapters\W32\Process\W32Process.cpp" Condition="'$(Platform)'!='ARM64'" />
+    <ClCompile Include="..\sources\Adapters\RTAudio\RTAudioDriver.cpp" Condition="'$(Platform)'!='ARM64'" />
+    <ClCompile Include="..\sources\Adapters\RTAudio\RTAudioStub.cpp" Condition="'$(Platform)'!='ARM64'" />
+    <ClCompile Include="..\sources\Adapters\W32\Audio\W32Audio.cpp" Condition="'$(Platform)'!='ARM64'" />
+    <ClCompile Include="..\sources\Adapters\W32\Audio\W32AudioDriver.cpp" Condition="'$(Platform)'!='ARM64'" />
+    <ClCompile Include="..\sources\Adapters\Sdl\Gui\GUIFactory.cpp" Condition="'$(Platform)'!='ARM64'" />
+    <ClCompile Include="..\sources\Adapters\Sdl\Gui\SDLEventManager.cpp" Condition="'$(Platform)'!='ARM64'" />
+    <ClCompile Include="..\sources\Adapters\Sdl\Gui\SDLGUIWindowImp.cpp" Condition="'$(Platform)'!='ARM64'" />
+    <ClCompile Include="..\sources\Adapters\W32\Timer\W32Timer.cpp" Condition="'$(Platform)'!='ARM64'" />
+    <!-- ARM64-only adapter files (SDL3) -->
+    <ClCompile Include="..\sources\Adapters\SDL3\GUI\GUIFactory.cpp" Condition="'$(Platform)'=='ARM64'" />
+    <ClCompile Include="..\sources\Adapters\SDL3\GUI\SDLEventManager.cpp" Condition="'$(Platform)'=='ARM64'" />
+    <ClCompile Include="..\sources\Adapters\SDL3\GUI\SDLGUIWindowImp.cpp" Condition="'$(Platform)'=='ARM64'" />
+    <ClCompile Include="..\sources\Adapters\SDL3\Audio\SDLAudio.cpp" Condition="'$(Platform)'=='ARM64'" />
+    <ClCompile Include="..\sources\Adapters\SDL3\Audio\SDLAudioDriver.cpp" Condition="'$(Platform)'=='ARM64'" />
+    <ClCompile Include="..\sources\Adapters\SDL3\Process\SDLProcess.cpp" Condition="'$(Platform)'=='ARM64'" />
+    <ClCompile Include="..\sources\Adapters\SDL3\Timer\SDLTimer.cpp" Condition="'$(Platform)'=='ARM64'" />
     <ClCompile Include="..\sources\System\FileSystem\FileSystem.cpp" />
     <ClCompile Include="..\sources\System\io\Status.cpp" />
     <ClCompile Include="..\sources\System\Timer\Timer.cpp" />
@@ -358,11 +447,11 @@
     <ClCompile Include="..\sources\Externals\TinyXML\tinyxmlerror.cpp" />
     <ClCompile Include="..\sources\Externals\TinyXML\tinyxmlparser.cpp" />
     <ClCompile Include="..\sources\Externals\Compression\lz.c" />
-    <ClCompile Include="..\sources\Externals\RTAudio\RtAudio.cpp" />
-    <ClCompile Include="..\sources\Externals\RTAudio\include\asio.cpp" />
-    <ClCompile Include="..\sources\Externals\RTAudio\include\asiodrivers.cpp" />
-    <ClCompile Include="..\sources\Externals\RTAudio\include\asiolist.cpp" />
-    <ClCompile Include="..\sources\Externals\RTAudio\include\iasiothiscallresolver.cpp" />
+    <ClCompile Include="..\sources\Externals\RTAudio\RtAudio.cpp" Condition="'$(Platform)'!='ARM64'" />
+    <ClCompile Include="..\sources\Externals\RTAudio\include\asio.cpp" Condition="'$(Platform)'!='ARM64'" />
+    <ClCompile Include="..\sources\Externals\RTAudio\include\asiodrivers.cpp" Condition="'$(Platform)'!='ARM64'" />
+    <ClCompile Include="..\sources\Externals\RTAudio\include\asiolist.cpp" Condition="'$(Platform)'!='ARM64'" />
+    <ClCompile Include="..\sources\Externals\RTAudio\include\iasiothiscallresolver.cpp" Condition="'$(Platform)'!='ARM64'" />
     <ClCompile Include="..\sources\Externals\RtMidi\RtMidi.cpp" />
     <ClCompile Include="..\sources\Externals\Soundfont\ENAB.CPP" />
     <ClCompile Include="..\sources\Externals\Soundfont\HYDRA.CPP" />
@@ -397,18 +486,25 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\sources\Adapters\W32FileSystem\W32FileSystem.h" />
-    <ClInclude Include="..\sources\Adapters\W32\Process\W32Process.h" />
     <ClInclude Include="..\sources\Adapters\WSDLSystem\WSDLSystem.h" />
-    <ClInclude Include="..\sources\Adapters\RTAudio\RTAudioDriver.h" />
-    <ClInclude Include="..\sources\Adapters\RTAudio\RTAudioStub.h" />
-    <ClInclude Include="..\sources\Adapters\W32\Audio\W32Audio.h" />
-    <ClInclude Include="..\sources\Adapters\W32\Audio\W32AudioDriver.h" />
     <ClInclude Include="..\sources\Adapters\RTMidi\RTMidiOutDevice.h" />
     <ClInclude Include="..\sources\Adapters\RTMidi\RTMidiService.h" />
-    <ClInclude Include="..\sources\Adapters\Sdl\Gui\GUIFactory.h" />
-    <ClInclude Include="..\sources\Adapters\Sdl\Gui\SDLEventManager.h" />
-    <ClInclude Include="..\sources\Adapters\Sdl\Gui\SDLGUIWindowImp.h" />
-    <ClInclude Include="..\sources\Adapters\W32\Timer\W32Timer.h" />
+    <ClInclude Include="..\sources\Adapters\W32\Process\W32Process.h" Condition="'$(Platform)'!='ARM64'" />
+    <ClInclude Include="..\sources\Adapters\RTAudio\RTAudioDriver.h" Condition="'$(Platform)'!='ARM64'" />
+    <ClInclude Include="..\sources\Adapters\RTAudio\RTAudioStub.h" Condition="'$(Platform)'!='ARM64'" />
+    <ClInclude Include="..\sources\Adapters\W32\Audio\W32Audio.h" Condition="'$(Platform)'!='ARM64'" />
+    <ClInclude Include="..\sources\Adapters\W32\Audio\W32AudioDriver.h" Condition="'$(Platform)'!='ARM64'" />
+    <ClInclude Include="..\sources\Adapters\Sdl\Gui\GUIFactory.h" Condition="'$(Platform)'!='ARM64'" />
+    <ClInclude Include="..\sources\Adapters\Sdl\Gui\SDLEventManager.h" Condition="'$(Platform)'!='ARM64'" />
+    <ClInclude Include="..\sources\Adapters\Sdl\Gui\SDLGUIWindowImp.h" Condition="'$(Platform)'!='ARM64'" />
+    <ClInclude Include="..\sources\Adapters\W32\Timer\W32Timer.h" Condition="'$(Platform)'!='ARM64'" />
+    <ClInclude Include="..\sources\Adapters\SDL3\GUI\GUIFactory.h" Condition="'$(Platform)'=='ARM64'" />
+    <ClInclude Include="..\sources\Adapters\SDL3\GUI\SDLEventManager.h" Condition="'$(Platform)'=='ARM64'" />
+    <ClInclude Include="..\sources\Adapters\SDL3\GUI\SDLGUIWindowImp.h" Condition="'$(Platform)'=='ARM64'" />
+    <ClInclude Include="..\sources\Adapters\SDL3\Audio\SDLAudio.h" Condition="'$(Platform)'=='ARM64'" />
+    <ClInclude Include="..\sources\Adapters\SDL3\Audio\SDLAudioDriver.h" Condition="'$(Platform)'=='ARM64'" />
+    <ClInclude Include="..\sources\Adapters\SDL3\Process\SDLProcess.h" Condition="'$(Platform)'=='ARM64'" />
+    <ClInclude Include="..\sources\Adapters\SDL3\Timer\SDLTimer.h" Condition="'$(Platform)'=='ARM64'" />
     <ClInclude Include="..\sources\System\FileSystem\FileSystem.h" />
     <ClInclude Include="..\sources\System\System\System.h" />
     <ClInclude Include="..\sources\System\Process\Process.h" />

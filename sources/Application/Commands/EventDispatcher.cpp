@@ -1,6 +1,8 @@
 #include "EventDispatcher.h"
 #ifdef SDL2
 #include <SDL2/SDL.h>
+#elif defined(SDL3)
+#include <SDL3/SDL.h>
 #else
 #include <SDL/SDL.h>
 #endif
