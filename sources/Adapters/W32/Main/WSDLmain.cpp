@@ -7,16 +7,8 @@
 // SDL3 builds: SDL_main.h provides the WinMain→main bridge on Windows.
 // SDLmain library was removed in SDL3; this header replaces it.
 // Win32 builds: use the bundled SDL1 header and SDLmain.lib instead.
-#if defined(_M_ARM64)
 #include <SDL3/SDL_main.h>
 #include "Adapters/SDL3/GUI/SDLGUIWindowImp.h"
-#else
-#include "Externals/SDL/SDL.h"
-#include "Adapters/SDL/GUI/SDLGUIWindowImp.h"
-int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
-    return SDL_main(__argc, __argv);
-}
-#endif
 #include <string.h>
 
 int main(int argc,char *argv[])

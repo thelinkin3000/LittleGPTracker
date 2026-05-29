@@ -3,23 +3,20 @@
 #include "Adapters/RTMidi/RTMidiService.h"
 #include "Adapters/W32/Midi/W32MidiService.h"
 #include "Adapters/W32FileSystem/W32FileSystem.h"
-#if defined(_M_ARM64)
+// SDL3 GUI used on all Windows platforms
 #include "Adapters/SDL3/GUI/SDLEventManager.h"
 #include "Adapters/SDL3/GUI/GUIFactory.h"
 #include "Adapters/SDL3/GUI/SDLGUIWindowImp.h"
+#include <SDL3/SDL.h>
+#if defined(_M_ARM64)
 #include "Adapters/SDL3/Audio/SDLAudio.h"
 #include "Adapters/SDL3/Process/SDLProcess.h"
 #include "Adapters/SDL3/Timer/SDLTimer.h"
-#include <SDL3/SDL.h>
 #else
 #include "Adapters/RTAudio/RTAudioStub.h"
-#include "Adapters/SDL/GUI/SDLEventManager.h"
-#include "Adapters/SDL/GUI/GUIFactory.h"
-#include "Adapters/SDL/GUI/SDLGUIWindowImp.h"
 #include "Adapters/W32/Audio/W32Audio.h"
 #include "Adapters/W32/Process/W32Process.h"
 #include "Adapters/W32/Timer/W32Timer.h"
-#include "Externals/SDL/SDL.h"
 #endif
 #include "Application/Model/Config.h"
 #include "System/Console/Logger.h"
@@ -78,7 +75,6 @@ void WSDLSystem::Boot(int argc,char **argv) {
 	I_GUIWindowFactory::Install(new GUIFactory()) ;
 
 #if defined(_M_ARM64)
-	// SDL3 services (ARM64)
 	TimerService::GetInstance()->Install(new SDLTimerService()) ;
 
 	AudioSettings hints ;
@@ -91,14 +87,10 @@ void WSDLSystem::Boot(int argc,char **argv) {
 	MidiService::Install(new RTMidiService()) ;
 	SysProcessFactory::Install(new SDLProcessFactory()) ;
 
-	// SDL3: SDL_INIT_TIMER removed; timer subsystem is always available
 	if ( !SDL_Init(SDL_INIT_VIDEO|SDL_INIT_JOYSTICK|SDL_INIT_AUDIO) ) {
 		return;
 	}
-	SDL_HideCursor();
-	atexit(SDL_Quit);
 #else
-	// SDL1 / Win32 services
 	TimerService::GetInstance()->Install(new W32TimerService()) ;
 
 	{
@@ -124,13 +116,12 @@ void WSDLSystem::Boot(int argc,char **argv) {
 	MidiService::Install(new RTMidiService()) ;
 	SysProcessFactory::Install(new W32ProcessFactory()) ;
 
-	if ( SDL_Init(SDL_INIT_VIDEO|SDL_INIT_JOYSTICK|SDL_INIT_TIMER) < 0 ) {
+	if ( !SDL_Init(SDL_INIT_VIDEO|SDL_INIT_JOYSTICK) ) {
 		return;
 	}
-	SDL_EnableUNICODE(1);
-	SDL_ShowCursor(SDL_DISABLE);
-	atexit(SDL_Quit);
 #endif
+	SDL_HideCursor();
+	atexit(SDL_Quit);
 
 	eventManager_=I_GUIWindowFactory::GetInstance()->GetEventManager() ;
 	eventManager_->Init() ;

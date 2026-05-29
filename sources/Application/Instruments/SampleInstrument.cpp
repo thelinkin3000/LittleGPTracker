@@ -810,19 +810,12 @@ bool SampleInstrument::Render(int channel,fixed *buffer,int size,bool updateTick
 			  short *i1=input;
         if (dsMask!=0xFFFFFFFF)
         {
-	        if (useDirtyDownsampling_)
-	        {
-#ifdef _64BIT
-	          i1 =(short *)(((long)input)&dsMask);
-#else
-	          i1 =(short *)(((unsigned int)input)&dsMask);
-#endif
-	        }
-          else
-	        {
-            unsigned int distance = (unsigned int)(input - dsBasePtr) /channelCount;
-            i1 = dsBasePtr+(distance&dsMask)*channelCount ;
-          }
+            // Compute sample position as a pointer-width offset relative to the
+            // buffer base so this works correctly on both 32-bit and 64-bit.
+            // The old code cast the absolute pointer to DWORD/long, zeroing the
+            // upper 32 bits on x64 and producing a garbage address.
+            uintptr_t distance = ((uintptr_t)(input - dsBasePtr) / channelCount) & (uintptr_t)dsMask;
+            i1 = dsBasePtr + distance * channelCount;
         }
 
         short *i2=i1+channelCount ;

@@ -218,7 +218,6 @@ void AppWindow::Redraw() {
 void AppWindow::Flush() {
 
     SysMutexLocker locker(drawMutex_);
-
     Lock();
     long flushStart = System::GetInstance()->GetClock();
 
@@ -624,15 +623,12 @@ void AppWindow::onQuitApp() {
 }
 void AppWindow::Print(char *line) {
 
-    //	GUIWindow::Clear(View::backgroundColor_,true) ;
     Clear();
     strcpy(_statusLine, line);
-    // unwrapped for gcc
     int position = 40;
-    position -= strlen(_statusLine);
+    position -= (int)strlen(_statusLine);
     position /= 2;
     GUIPoint pos(position, 12);
-    //
     GUITextProperties props;
     SetColor(CD_NORMAL);
     DrawString(_statusLine, pos, props);
@@ -640,7 +636,7 @@ void AppWindow::Print(char *line) {
     sprintf(buildString, "Piggy build %s.%s.%s", PROJECT_NUMBER,
             PROJECT_RELEASE, BUILD_COUNT);
     pos._y = 28;
-    pos._x = (40 - strlen(buildString)) / 2;
+    pos._x = (40 - (int)strlen(buildString)) / 2;
     DrawString(buildString, pos, props);
     Flush();
 };

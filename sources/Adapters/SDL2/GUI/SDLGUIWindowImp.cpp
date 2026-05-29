@@ -95,7 +95,7 @@ SDLGUIWindowImp::SDLGUIWindowImp(GUICreateWindowParams &p)
 		}
 		else
 		{
-		mult_ = 1;
+		mult_ = multFromSize > 0 ? multFromSize : 1;
 		}
 	}
   #endif

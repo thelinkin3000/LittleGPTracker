@@ -6,7 +6,7 @@
 #include "Services/Midi/MidiService.h"
 #include <assert.h>
 
-void CALLBACK winmm_cback(HWAVEOUT hwo, UINT uMsg, DWORD dwInstance, DWORD dwParam1, DWORD dwParam2) {
+void CALLBACK winmm_cback(HWAVEOUT hwo, UINT uMsg, DWORD_PTR dwInstance, DWORD_PTR dwParam1, DWORD_PTR dwParam2) {
 
 	switch(uMsg) {
 		case WOM_OPEN:
@@ -16,14 +16,12 @@ void CALLBACK winmm_cback(HWAVEOUT hwo, UINT uMsg, DWORD dwInstance, DWORD dwPar
 			Trace::Debug("Windows MM Audio device closed");
 			break;
 		case WOM_DONE:
-		//	try {
+			{
 				W32AudioDriver *sound=(W32AudioDriver *)dwInstance ;
 				WAVEHDR *hdr=(WAVEHDR *)dwParam1 ;
 				W32SoundBuffer *sb=(W32SoundBuffer *)hdr->dwUser ;
 				sound->OnChunkDone(sb) ;
-		//	} catch(...) {
-		//		Trace::Debug("Error treating sound block") ;
-		//	}
+			}
 			break;
 	};
 }
@@ -47,7 +45,7 @@ bool W32AudioDriver::InitDriver() {
     fx.nBlockAlign = (WORD)((fx.nChannels * fx.wBitsPerSample) / 8); 
     fx.nAvgBytesPerSec = (fx.nSamplesPerSec * fx.nBlockAlign); 
     fx.cbSize = 0; 
-	if((res = waveOutOpen(&waveOut_, index_, &fx, (DWORD)winmm_cback,(DWORD)this,(DWORD) CALLBACK_FUNCTION )) != MMSYSERR_NOERROR) {
+	if((res = waveOutOpen(&waveOut_, index_, &fx, (DWORD_PTR)winmm_cback,(DWORD_PTR)this, CALLBACK_FUNCTION)) != MMSYSERR_NOERROR) {
         Trace::Error("W32AudioDriver::Init:Failed") ;
         waveOut_=0 ;
 		return false ;
@@ -144,7 +142,7 @@ void W32AudioDriver::sendNextChunk(bool notify) {
 	    sbuffer->wavHeader_->dwFlags=0 ;
 	    sbuffer->wavHeader_->lpNext=0 ;
 	    sbuffer->wavHeader_->reserved=0 ;
-	    sbuffer->wavHeader_->dwUser=(DWORD)sbuffer ;
+	    sbuffer->wavHeader_->dwUser=(DWORD_PTR)sbuffer ;
         sbuffer->wavHeader_->dwBufferLength=abd->size_ ;
         sbuffer->index_=poolPlayPosition_ ;
 

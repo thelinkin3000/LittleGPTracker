@@ -4,18 +4,14 @@
 #include "System/System/System.h"
 #include <assert.h>
 
-static void CALLBACK TimerProc(UINT uiID, UINT uiMsg, DWORD
-                                  dwUser, DWORD dw1, DWORD dw2) {
-      static volatile bool entered = false;
-
+static void CALLBACK TimerProc(UINT uiID, UINT uiMsg, DWORD_PTR
+                                  dwUser, DWORD_PTR dw1, DWORD_PTR dw2) {
 	W32Timer *timer=(W32Timer *)dwUser ;
 	timer->OnTimerTick() ;
 } ;
 
-static void CALLBACK TimerCallbackProc(UINT uiID, UINT uiMsg, DWORD
-                                  dwUser, DWORD dw1, DWORD dw2) {
-      static volatile bool entered = false;
-
+static void CALLBACK TimerCallbackProc(UINT uiID, UINT uiMsg, DWORD_PTR
+                                  dwUser, DWORD_PTR dw1, DWORD_PTR dw2) {
 	timerCallback cb=(timerCallback)dwUser ;
 	(*cb)() ;
 } ;
@@ -40,7 +36,7 @@ bool W32Timer::Start() {
 		offset_=period_ ;
 		int newcb=int(offset_) ;
 		offset_-=newcb ;
-		timer_=timeSetEvent(newcb, 0, &TimerProc, (DWORD)this,TIME_ONESHOT);
+		timer_=timeSetEvent(newcb, 0, &TimerProc, (DWORD_PTR)this,TIME_ONESHOT);
 		running_=true ;
 	}
 	return (timer_!=0) ;
@@ -65,7 +61,7 @@ void W32Timer::OnTimerTick() {
 		newcb=int(offset_) ;
 		offset_-=newcb ;
 		assert(newcb>0) ;
-		timer_=timeSetEvent(newcb, 0, &TimerProc, (DWORD)this,TIME_ONESHOT);
+		timer_=timeSetEvent(newcb, 0, &TimerProc, (DWORD_PTR)this,TIME_ONESHOT);
 	}
 } ;
 
@@ -76,5 +72,5 @@ I_Timer *W32TimerService::CreateTimer() {
 } ;
 
 void W32TimerService::TriggerCallback(int msec,timerCallback cb) {
-	timeSetEvent(msec, 0, &TimerCallbackProc, (DWORD)cb,TIME_ONESHOT) ;
+	timeSetEvent(msec, 0, &TimerCallbackProc, (DWORD_PTR)cb,TIME_ONESHOT) ;
 } ;

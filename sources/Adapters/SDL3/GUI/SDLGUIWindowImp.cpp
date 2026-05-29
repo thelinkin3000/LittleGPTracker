@@ -230,6 +230,9 @@ void SDLGUIWindowImp::DrawChar(const char c, GUIPoint &pos, GUITextProperties &p
 	if ((xx<0) || (yy<0)) return;
 	if ((xx>=screenRect_._bottomRight._x) || (yy>=screenRect_._bottomRight._y))
 		return ;
+	// Guard against OS-constrained surface being smaller than the requested window size.
+	// (ProcessExpose may re-fetch a surface shorter than appHeight*mult_ due to title bar/taskbar.)
+	if (yy + 8*mult_ > surface_->h || xx + 8*mult_ > surface_->w) return ;
 	if ((!framebuffer_)&&(updateCount_<MAX_OVERLAYS)) {
 		SDL_Rect *area=updateRects_+updateCount_++ ;
 		area->x=xx ;

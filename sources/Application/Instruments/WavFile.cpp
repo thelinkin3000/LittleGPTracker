@@ -205,8 +205,8 @@ WavFile *WavFile::Open(const char *path) {
 		}
 		wav->bytePerSample_=4 ;
 	} else {
-		if ((bitPerSample!=16)&&(bitPerSample!=8)) {
-			Trace::Error("Only 8/16 bit supported") ;
+		if ((bitPerSample!=16)&&(bitPerSample!=8)&&(bitPerSample!=24)) {
+			Trace::Error("Only 8/16/24 bit PCM supported, got %d", bitPerSample) ;
 			delete wav ;
 			return 0 ;
 		}
@@ -353,8 +353,28 @@ bool WavFile::GetBuffer(long start,long size) {
 			remaining-=batch ;
 			if (bufferChunkSize_>0) TimeService::GetInstance()->Sleep(1) ;
 		}
+	} else if (bytePerSample_==3) {
+		// 24-bit PCM: output buffer is 16-bit so we can't read raw in-place.
+		// Read in chunks and convert top 2 bytes of each 24-bit sample to int16.
+		int totalSamples=size*channelCount_ ;
+		int chunkSamples=(bufferChunkSize_>0) ? (bufferChunkSize_/3) : 1024 ;
+		if (chunkSamples<1) chunkSamples=1 ;
+		int remaining=totalSamples ;
+		int outOffset=0 ;
+		while (remaining>0) {
+			int batch=(remaining<chunkSamples)?remaining:chunkSamples ;
+			readBlock(bufferStart,batch*3) ;
+			unsigned char *s=(unsigned char *)readBuffer_ ;
+			for (int i=0;i<batch;i++,s+=3) {
+				// little-endian [b0,b1,b2]: keep top 16 bits (b1 | b2<<8)
+				samples_[outOffset++]=(short)(s[1] | ((signed char)s[2]<<8)) ;
+			}
+			bufferStart+=batch*3 ;
+			remaining-=batch ;
+			if (bufferChunkSize_>0) TimeService::GetInstance()->Sleep(1) ;
+		}
 	} else {
-		// PCM path: read raw bytes then expand 8-bit in-place
+		// 8-bit and 16-bit PCM: read raw bytes then expand 8-bit in-place
 		int count=bufferSize ;
 		int offset=0 ;
 		char *ptr=(char *)samples_ ;
