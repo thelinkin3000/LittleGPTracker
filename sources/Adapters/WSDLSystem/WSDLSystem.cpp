@@ -8,13 +8,12 @@
 #include "Adapters/SDL3/GUI/GUIFactory.h"
 #include "Adapters/SDL3/GUI/SDLGUIWindowImp.h"
 #include <SDL3/SDL.h>
+#include "Adapters/RTAudio/RTAudioStub.h"
+#include "Adapters/W32/Audio/W32Audio.h"
 #if defined(_M_ARM64)
-#include "Adapters/SDL3/Audio/SDLAudio.h"
 #include "Adapters/SDL3/Process/SDLProcess.h"
 #include "Adapters/SDL3/Timer/SDLTimer.h"
 #else
-#include "Adapters/RTAudio/RTAudioStub.h"
-#include "Adapters/W32/Audio/W32Audio.h"
 #include "Adapters/W32/Process/W32Process.h"
 #include "Adapters/W32/Timer/W32Timer.h"
 #endif
@@ -76,22 +75,13 @@ void WSDLSystem::Boot(int argc,char **argv) {
 
 #if defined(_M_ARM64)
 	TimerService::GetInstance()->Install(new SDLTimerService()) ;
-
-	AudioSettings hints ;
-	hints.audioAPI_="SDL" ;
-	hints.audioDevice_="" ;
-	hints.bufferSize_=512 ;
-	hints.preBufferCount_=4 ;
-	Audio::Install(new SDLAudio(hints)) ;
-
 	MidiService::Install(new RTMidiService()) ;
 	SysProcessFactory::Install(new SDLProcessFactory()) ;
-
-	if ( !SDL_Init(SDL_INIT_VIDEO|SDL_INIT_JOYSTICK|SDL_INIT_AUDIO) ) {
-		return;
-	}
 #else
 	TimerService::GetInstance()->Install(new W32TimerService()) ;
+	MidiService::Install(new RTMidiService()) ;
+	SysProcessFactory::Install(new W32ProcessFactory()) ;
+#endif
 
 	{
 	AudioSettings hints ;
@@ -113,13 +103,9 @@ void WSDLSystem::Boot(int argc,char **argv) {
 	Audio::Install(audio) ;
 	}
 
-	MidiService::Install(new RTMidiService()) ;
-	SysProcessFactory::Install(new W32ProcessFactory()) ;
-
 	if ( !SDL_Init(SDL_INIT_VIDEO|SDL_INIT_JOYSTICK) ) {
 		return;
 	}
-#endif
 	SDL_HideCursor();
 	atexit(SDL_Quit);
 

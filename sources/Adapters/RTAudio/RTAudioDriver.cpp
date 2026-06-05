@@ -165,7 +165,10 @@ void RTAudioDriver::fillBuffer(short *stream, int frameCount) {
 
         if (pool_[poolPlayPosition_].buffer_ == 0) {
             // underrun, let's fill the buffer with blank and bail out
+            // Still notify the driver thread so it can generate new buffers;
+            // without this, the thread stays blocked on the semaphore forever.
             SYS_MEMSET(stream, 0, len);
+            thread_->Notify();
             return;
         } else {
             memcpy(mainBuffer_, mainBuffer_ + bufferPos_,

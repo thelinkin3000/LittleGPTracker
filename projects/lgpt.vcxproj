@@ -271,7 +271,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(ProjectDir)..\sources\Externals;$(ProjectDir)..\sources\;$(ProjectDir)..\libs\SDL3\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;__WINDOWS_MM__;_CRT_SECURE_NO_WARNINGS;CPP_MEMORY;SDL3;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;__WINDOWS_DS__;__WINDOWS_ASIO__;__WINDOWS_MM__;_CRT_SECURE_NO_WARNINGS;CPP_MEMORY;SDL3;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <BufferSecurityCheck>true</BufferSecurityCheck>
@@ -282,7 +282,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>SDL3.lib;winmm.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL3.lib;winmm.lib;dsound.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)lgptd.exe</OutputFile>
       <AdditionalLibraryDirectories>$(ProjectDir)..\libs\SDL3\lib\arm64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -295,7 +295,7 @@
     <ClCompile>
       <Optimization>Full</Optimization>
       <AdditionalIncludeDirectories>$(ProjectDir)..\sources\Externals;$(ProjectDir)..\sources\;$(ProjectDir)..\libs\SDL3\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;__WINDOWS_MM__;_CRT_SECURE_NO_WARNINGS;CPP_MEMORY;SDL3;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;__WINDOWS_DS__;__WINDOWS_ASIO__;__WINDOWS_MM__;_CRT_SECURE_NO_WARNINGS;CPP_MEMORY;SDL3;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>
       </PrecompiledHeader>
@@ -305,7 +305,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>SDL3.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL3.lib;winmm.lib;dsound.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)lgpt.exe</OutputFile>
       <AdditionalLibraryDirectories>$(ProjectDir)..\libs\SDL3\lib\arm64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -401,20 +401,19 @@
     <ClCompile Include="..\sources\Adapters\RTMidi\RTMidiInDevice.cpp" />
     <ClCompile Include="..\sources\Adapters\RTMidi\RTMidiOutDevice.cpp" />
     <ClCompile Include="..\sources\Adapters\RTMidi\RTMidiService.cpp" />
-    <!-- Legacy Win32 adapter files (audio/process/timer, non-ARM64 only) -->
+    <!-- W32 audio/process/timer (non-ARM64 only; ARM64 uses SDL process/timer) -->
     <ClCompile Include="..\sources\Adapters\W32\Process\W32Process.cpp" Condition="'$(Platform)'!='ARM64'" />
-    <ClCompile Include="..\sources\Adapters\RTAudio\RTAudioDriver.cpp" Condition="'$(Platform)'!='ARM64'" />
-    <ClCompile Include="..\sources\Adapters\RTAudio\RTAudioStub.cpp" Condition="'$(Platform)'!='ARM64'" />
-    <ClCompile Include="..\sources\Adapters\W32\Audio\W32Audio.cpp" Condition="'$(Platform)'!='ARM64'" />
-    <ClCompile Include="..\sources\Adapters\W32\Audio\W32AudioDriver.cpp" Condition="'$(Platform)'!='ARM64'" />
     <ClCompile Include="..\sources\Adapters\W32\Timer\W32Timer.cpp" Condition="'$(Platform)'!='ARM64'" />
+    <!-- RTAudio and W32 audio (all Windows platforms) -->
+    <ClCompile Include="..\sources\Adapters\RTAudio\RTAudioDriver.cpp" />
+    <ClCompile Include="..\sources\Adapters\RTAudio\RTAudioStub.cpp" />
+    <ClCompile Include="..\sources\Adapters\W32\Audio\W32Audio.cpp" />
+    <ClCompile Include="..\sources\Adapters\W32\Audio\W32AudioDriver.cpp" />
     <!-- SDL3 GUI adapter files (all Windows platforms) -->
     <ClCompile Include="..\sources\Adapters\SDL3\GUI\GUIFactory.cpp" />
     <ClCompile Include="..\sources\Adapters\SDL3\GUI\SDLEventManager.cpp" />
     <ClCompile Include="..\sources\Adapters\SDL3\GUI\SDLGUIWindowImp.cpp" />
-    <!-- SDL3 audio/process/timer (ARM64 only) -->
-    <ClCompile Include="..\sources\Adapters\SDL3\Audio\SDLAudio.cpp" Condition="'$(Platform)'=='ARM64'" />
-    <ClCompile Include="..\sources\Adapters\SDL3\Audio\SDLAudioDriver.cpp" Condition="'$(Platform)'=='ARM64'" />
+    <!-- SDL3 process/timer (ARM64 only) -->
     <ClCompile Include="..\sources\Adapters\SDL3\Process\SDLProcess.cpp" Condition="'$(Platform)'=='ARM64'" />
     <ClCompile Include="..\sources\Adapters\SDL3\Timer\SDLTimer.cpp" Condition="'$(Platform)'=='ARM64'" />
     <ClCompile Include="..\sources\System\FileSystem\FileSystem.cpp" />
@@ -525,11 +524,11 @@
     <ClCompile Include="..\sources\Externals\TinyXML\tinyxmlerror.cpp" />
     <ClCompile Include="..\sources\Externals\TinyXML\tinyxmlparser.cpp" />
     <ClCompile Include="..\sources\Externals\Compression\lz.c" />
-    <ClCompile Include="..\sources\Externals\RTAudio\RtAudio.cpp" Condition="'$(Platform)'!='ARM64'" />
-    <ClCompile Include="..\sources\Externals\RTAudio\include\asio.cpp" Condition="'$(Platform)'!='ARM64'" />
-    <ClCompile Include="..\sources\Externals\RTAudio\include\asiodrivers.cpp" Condition="'$(Platform)'!='ARM64'" />
-    <ClCompile Include="..\sources\Externals\RTAudio\include\asiolist.cpp" Condition="'$(Platform)'!='ARM64'" />
-    <ClCompile Include="..\sources\Externals\RTAudio\include\iasiothiscallresolver.cpp" Condition="'$(Platform)'!='ARM64'" />
+    <ClCompile Include="..\sources\Externals\RTAudio\RtAudio.cpp" />
+    <ClCompile Include="..\sources\Externals\RTAudio\include\asio.cpp" />
+    <ClCompile Include="..\sources\Externals\RTAudio\include\asiodrivers.cpp" />
+    <ClCompile Include="..\sources\Externals\RTAudio\include\asiolist.cpp" />
+    <ClCompile Include="..\sources\Externals\RTAudio\include\iasiothiscallresolver.cpp" />
     <ClCompile Include="..\sources\Externals\RtMidi\RtMidi.cpp" />
     <ClCompile Include="..\sources\Externals\Soundfont\ENAB.CPP" />
     <ClCompile Include="..\sources\Externals\Soundfont\HYDRA.CPP" />
@@ -568,16 +567,14 @@
     <ClInclude Include="..\sources\Adapters\RTMidi\RTMidiOutDevice.h" />
     <ClInclude Include="..\sources\Adapters\RTMidi\RTMidiService.h" />
     <ClInclude Include="..\sources\Adapters\W32\Process\W32Process.h" Condition="'$(Platform)'!='ARM64'" />
-    <ClInclude Include="..\sources\Adapters\RTAudio\RTAudioDriver.h" Condition="'$(Platform)'!='ARM64'" />
-    <ClInclude Include="..\sources\Adapters\RTAudio\RTAudioStub.h" Condition="'$(Platform)'!='ARM64'" />
-    <ClInclude Include="..\sources\Adapters\W32\Audio\W32Audio.h" Condition="'$(Platform)'!='ARM64'" />
-    <ClInclude Include="..\sources\Adapters\W32\Audio\W32AudioDriver.h" Condition="'$(Platform)'!='ARM64'" />
     <ClInclude Include="..\sources\Adapters\W32\Timer\W32Timer.h" Condition="'$(Platform)'!='ARM64'" />
+    <ClInclude Include="..\sources\Adapters\RTAudio\RTAudioDriver.h" />
+    <ClInclude Include="..\sources\Adapters\RTAudio\RTAudioStub.h" />
+    <ClInclude Include="..\sources\Adapters\W32\Audio\W32Audio.h" />
+    <ClInclude Include="..\sources\Adapters\W32\Audio\W32AudioDriver.h" />
     <ClInclude Include="..\sources\Adapters\SDL3\GUI\GUIFactory.h" />
     <ClInclude Include="..\sources\Adapters\SDL3\GUI\SDLEventManager.h" />
     <ClInclude Include="..\sources\Adapters\SDL3\GUI\SDLGUIWindowImp.h" />
-    <ClInclude Include="..\sources\Adapters\SDL3\Audio\SDLAudio.h" Condition="'$(Platform)'=='ARM64'" />
-    <ClInclude Include="..\sources\Adapters\SDL3\Audio\SDLAudioDriver.h" Condition="'$(Platform)'=='ARM64'" />
     <ClInclude Include="..\sources\Adapters\SDL3\Process\SDLProcess.h" Condition="'$(Platform)'=='ARM64'" />
     <ClInclude Include="..\sources\Adapters\SDL3\Timer\SDLTimer.h" Condition="'$(Platform)'=='ARM64'" />
     <ClInclude Include="..\sources\System\FileSystem\FileSystem.h" />

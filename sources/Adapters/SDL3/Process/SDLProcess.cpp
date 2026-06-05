@@ -22,7 +22,10 @@ SDLSysSemaphore::SDLSysSemaphore(int initialcount,int maxcount) {
 } ;
 
 SDLSysSemaphore::~SDLSysSemaphore() {
-	handle_=0 ;
+	if (handle_) {
+		SDL_DestroySemaphore(handle_) ;
+		handle_ = 0 ;
+	}
 } ;
 
 SysSemaphoreResult SDLSysSemaphore::Wait() {
