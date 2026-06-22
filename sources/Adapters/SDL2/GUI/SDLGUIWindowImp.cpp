@@ -45,8 +45,12 @@ SDLGUIWindowImp::SDLGUIWindowImp(GUICreateWindowParams &p)
   int screenHeight = 272;
   windowed_ = false;
  #elif defined(RS97)
-  int screenWidth = 320; 
+  int screenWidth = 320;
   int screenHeight = 240;
+  windowed_ = false;
+ #elif defined(PLATFORM_SWITCH)
+  int screenWidth = displayMode.w;   // 1280 handheld / 1920 docked
+  int screenHeight = displayMode.h;  // 720 handheld / 1080 docked
   windowed_ = false;
  #else
   int screenWidth = displayMode.w;

@@ -198,7 +198,6 @@ void SDLAudioDriver::OnChunkDone(Uint8 *stream, int len) {
     // Now dump audio to the device
 
     SYS_MEMCPY(stream, (short *)(mainBuffer_ + bufferPos_), len);
-    onAudioBufferTick();
     bufferPos_ += len;
 }
 

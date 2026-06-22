@@ -1,0 +1,55 @@
+-include $(PWD)/rules_base
+
+DEVKITPRO  := /opt/devkitpro
+DEVKITARM64 := $(DEVKITPRO)/devkitA64
+PORTLIBS   := $(DEVKITPRO)/portlibs/switch
+LIBNX      := $(DEVKITPRO)/libnx
+
+TOOLPATH   := $(DEVKITARM64)/bin
+PREFIX     := aarch64-none-elf-
+CC         := $(PREFIX)gcc
+CXX        := $(PREFIX)g++
+STRIP      := $(PREFIX)strip
+
+ARCH_FLAGS := -march=armv8-a -mtune=cortex-a57 -mtp=soft -fPIE
+
+DEFINES := \
+	-DPLATFORM_SWITCH \
+	-D_64BIT \
+	-DBUFFERED \
+	-DCPP_MEMORY \
+	-DHAVE_STDINT_H \
+	-D_NDEBUG \
+	-D_NO_JACK_ \
+	-DSDL2 \
+	-DSDLAUDIO \
+	-DDUMMYMIDI
+
+SDL_CFLAGS := -I$(PORTLIBS)/include/SDL2 -D_REENTRANT
+SDL_LIBS   := -L$(PORTLIBS)/lib -lSDL2
+
+INCLUDES := \
+	$(SDL_CFLAGS) \
+	-I$(LIBNX)/include \
+	-I$(PORTLIBS)/include \
+	-I$(PWD)/../sources
+
+OPT_FLAGS := -O2
+
+CFLAGS   := $(DEFINES) $(INCLUDES) $(ARCH_FLAGS) $(OPT_FLAGS) -Wall
+CXXFLAGS := $(CFLAGS) -std=gnu++11
+
+LDFLAGS  := -specs=$(LIBNX)/switch.specs -g $(ARCH_FLAGS) -Wl,-Map,$(OUTPUT).map
+
+LIBS := \
+	$(SDL_LIBS) \
+	-lEGL -lglapi -ldrm_nouveau \
+	-L$(LIBNX)/lib -lnx \
+	-L$(PORTLIBS)/lib \
+	-lpthread -lm
+
+OUTPUT    := ../lgpt-switch
+EXTENSION := elf
+
+%.elf: $(OFILES)
+	$(CXX) $(LDFLAGS) -o $@ $(OFILES) $(LIBS)

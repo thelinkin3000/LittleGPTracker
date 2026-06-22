@@ -40,6 +40,9 @@ bool SDLEventManager::Init()
   {
 		dumpEvent_=true ;
 	}
+#if defined(PLATFORM_SWITCH)
+	dumpEvent_=true ; // always log events on Switch for diagnostics
+#endif
 
 	for (int i=0;i<MAX_JOY_COUNT;i++) 
   {

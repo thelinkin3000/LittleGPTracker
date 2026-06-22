@@ -112,6 +112,15 @@ PORTMASTERDIRS := $(LINUXDIRS) $(DUMMYMIDIDIRS) $(SDL2DIRS) $(SDL2AUDIODIRS)
 STEAMDIRS := $(LINUXDIRS) $(JACKDIRS) $(RTAUDIODIRS) $(RTMIDIDIRS) $(SDLDIRS)
 X64DIRS := $(LINUXDIRS) $(RTMIDIDIRS) $(SDL2DIRS) $(SDL2AUDIODIRS)
 X86DIRS := $(LINUXDIRS) $(RTMIDIDIRS) $(SDL2DIRS) $(SDL2AUDIODIRS)
+SWITCHDIRS := \
+	../sources/Adapters/NX/Main \
+	../sources/Adapters/NX/System \
+	../sources/Adapters/NX/Process \
+	../sources/Adapters/Unix/FileSystem \
+	../sources/System/Process \
+	$(DUMMYMIDIDIRS) \
+	$(SDL2DIRS) \
+	$(SDL2AUDIODIRS)
 
 #---------------------------------------------------------------------------------
 # Consoles/Embedded
@@ -332,6 +341,19 @@ PORTMASTERFILES := $(LINUXFILES) $(SDLAUDIOFILES) $(DUMMYMIDIFILES)
 STEAMFILES := $(LINUXFILES) $(RTAUDIOFILES) $(RTMIDIFILES) $(JACKFILES)
 X64FILES := $(LINUXFILES) $(RTMIDIFILES) $(SDLAUDIOFILES)
 X86FILES := $(LINUXFILES) $(RTMIDIFILES) $(SDLAUDIOFILES)
+SWITCHFILES := \
+	NXMain.o \
+	NXSystem.o \
+	NXProcess.o \
+	UnixFileSystem.o \
+	GUIFactory.o \
+	SDLGUIWindowImp.o \
+	SDLEventManager.o \
+	Process.o \
+	SDLTimer.o \
+	SDLAudioDriver.o \
+	SDLAudio.o \
+	DummyMidi.o
 
 #---------------------------------------------------------------------------------
 # Consoles/Embedded
