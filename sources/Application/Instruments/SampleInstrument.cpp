@@ -7,6 +7,7 @@
 #include "Application/Player/PlayerMixer.h" // For MIX_BUFFER_SIZE.. kick out pls
 #include "Application/Player/SyncMaster.h"
 #include "Application/Instruments/Filters.h"
+#include "Application/Instruments/ReverbBus.h"
 #include "Application/Model/Table.h"
 #include "Services/Audio/Audio.h"
 #include "SampleVariable.h"
@@ -126,6 +127,12 @@ SampleInstrument::SampleInstrument() {
 
      irWet_ = new Variable("effect amount", SIP_IR_WET, 45);
      Insert(irWet_);
+
+     revSend_ = new Variable("rev send", SIP_RVSN, 0);
+     Insert(revSend_);
+
+     revBus_ = new Variable("rev bus", SIP_RVBS, 0);
+     Insert(revBus_);
 
      // Initalize instrument's voices update list
 
@@ -979,6 +986,15 @@ bool SampleInstrument::Render(int channel,fixed *buffer,int size,bool updateTick
 		rp->feedbackIn_=(feedbackIn-feedbackStart)/2 ;
 		rp->feedbackOut_=(feedbackPick-feedbackStart)/2 ;
 		somethingToMix=true ;
+    }
+
+    // --- Reverb send ---
+    int iRSend = revSend_->GetInt();
+    int iRBus = revBus_->GetInt();
+    if (iRSend > 0 && somethingToMix) {
+        if (iRBus >= 0 && iRBus < REVERB_BUS_COUNT) {
+            ReverbBus::Accumulate(iRBus, buffer, size, iRSend);
+        }
     }
 
     return somethingToMix ; 

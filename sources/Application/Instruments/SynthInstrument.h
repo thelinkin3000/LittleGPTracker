@@ -30,6 +30,10 @@
 #define SYIP_TABL   MAKE_FOURCC('T','A','B','L')
 #define SYIP_TBLA   MAKE_FOURCC('T','B','L','A')
 
+// Reverb send / bus select
+#define SYIP_RVSN   MAKE_FOURCC('R','V','S','N')
+#define SYIP_RVBS   MAKE_FOURCC('R','V','B','S')
+
 enum SynthWaveform { SWF_SINE=0, SWF_TRI, SWF_SAW, SWF_SQUARE, SWF_LAST };
 enum SynthOsc2Wave { SO2_SINE=0, SO2_TRI, SO2_SAW, SO2_SQUARE, SO2_OFF, SO2_LAST };
 enum SynthLfoDest  { SLD_PITCH=0, SLD_FCUT, SLD_AMP, SLD_LAST };
@@ -104,6 +108,8 @@ private:
     Variable *lfoDest_;
     Variable *table_;
     Variable *tableAuto_;
+    Variable *revSend_;
+    Variable *revBus_;
 
     static fixed noteTable_[128];
     static fixed sineTable_[256];

@@ -8,6 +8,17 @@
 #include "Services/Midi/MidiService.h"
 #include "System/Console/Trace.h"
 
+// Reverb bus FourCCs for lookup
+#define VAR_RV0SZ MAKE_FOURCC('R','V','0','S')
+#define VAR_RV0DM MAKE_FOURCC('R','V','0','D')
+#define VAR_RV0WT MAKE_FOURCC('R','V','0','W')
+#define VAR_RV1SZ MAKE_FOURCC('R','V','1','S')
+#define VAR_RV1DM MAKE_FOURCC('R','V','1','D')
+#define VAR_RV1WT MAKE_FOURCC('R','V','1','W')
+#define VAR_RV2SZ MAKE_FOURCC('R','V','2','S')
+#define VAR_RV2DM MAKE_FOURCC('R','V','2','D')
+#define VAR_RV2WT MAKE_FOURCC('R','V','2','W')
+
 MixerService::MixerService() : out_(0), sync_(0), isRendering_(false) {
     mode_ = MSRM_PLAYBACK;
 };
@@ -34,6 +45,7 @@ bool MixerService::Init() {
 	for (int i=0;i<MAX_BUS_COUNT;i++) {
 		master_.Insert(bus_[i]);
 	}
+	master_.Insert(reverbBus_);
 
 	bool result = false;
 	if (out_) {
@@ -189,11 +201,33 @@ void MixerService::toggleRendering(bool enable) {
 
 void MixerService::OnPlayerStart() {
 	toggleRendering(true) ;
+	SyncReverbConfigs();
 } ;
 
 void MixerService::OnPlayerStop() {
 	toggleRendering(false) ;
 } ;
+
+void MixerService::SyncReverbConfigs() {
+    Project *project = Project::GetInstance();
+    if (!project) return;
+
+    static const FourCC sizeIDs[3] = { VAR_RV0SZ, VAR_RV1SZ, VAR_RV2SZ };
+    static const FourCC dampIDs[3] = { VAR_RV0DM, VAR_RV1DM, VAR_RV2DM };
+    static const FourCC wetIDs[3]  = { VAR_RV0WT, VAR_RV1WT, VAR_RV2WT };
+
+    for (int b = 0; b < 3; b++) {
+        Variable *vSize = project->FindVariable(sizeIDs[b]);
+        Variable *vDamp = project->FindVariable(dampIDs[b]);
+        Variable *vWet  = project->FindVariable(wetIDs[b]);
+
+        ReverbBusConfig cfg;
+        cfg.size = vSize ? vSize->GetInt() : 64;
+        cfg.damp = vDamp ? vDamp->GetInt() : 64;
+        cfg.wet  = vWet  ? vWet->GetInt()  : 64;
+        ReverbBus::SetBusConfig(b, cfg);
+    }
+}
 
 void MixerService::Execute(FourCC id,float value) {
      if (value>0.5) {

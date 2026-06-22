@@ -489,6 +489,7 @@
     <ClCompile Include="..\sources\Application\Player\TablePlayback.cpp" />
     <ClCompile Include="..\sources\Application\Instruments\CommandList.cpp" />
     <ClCompile Include="..\sources\Application\Instruments\Filters.cpp" />
+    <ClCompile Include="..\sources\Application\Instruments\ReverbBus.cpp" />
     <ClCompile Include="..\sources\Application\Instruments\InstrumentBank.cpp" />
     <ClCompile Include="..\sources\Application\Instruments\MidiInstrument.cpp" />
     <ClCompile Include="..\sources\Application\Instruments\SampleInstrument.cpp" />

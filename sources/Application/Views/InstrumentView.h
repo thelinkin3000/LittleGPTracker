@@ -22,6 +22,7 @@ protected:
 	void fillSampleParameters() ;
 	void fillMidiParameters() ;
 	void fillSynthParameters() ;
+	void fillEffectParameters(GUIPoint &position, I_Instrument *instr) ;
 	InstrumentType getInstrumentType() ;
 	void Update(Observable &o,I_ObservableData *d) ;
 

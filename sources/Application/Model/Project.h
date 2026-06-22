@@ -19,6 +19,17 @@
 #define VAR_SCALE 			MAKE_FOURCC('S', 'C', 'A', 'L')
 #define VAR_RENDER MAKE_FOURCC('R', 'N', 'D', 'R')
 
+// Reverb bus global configs (3 buses × size/damp/wet)
+#define VAR_RV0SZ MAKE_FOURCC('R','V','0','S')
+#define VAR_RV0DM MAKE_FOURCC('R','V','0','D')
+#define VAR_RV0WT MAKE_FOURCC('R','V','0','W')
+#define VAR_RV1SZ MAKE_FOURCC('R','V','1','S')
+#define VAR_RV1DM MAKE_FOURCC('R','V','1','D')
+#define VAR_RV1WT MAKE_FOURCC('R','V','1','W')
+#define VAR_RV2SZ MAKE_FOURCC('R','V','2','S')
+#define VAR_RV2DM MAKE_FOURCC('R','V','2','D')
+#define VAR_RV2WT MAKE_FOURCC('R','V','2','W')
+
 #define PROJECT_NUMBER "1"
 #define PROJECT_RELEASE "6"
 #define BUILD_COUNT "0-bacon15"
@@ -29,6 +40,7 @@ class Project: public Persistent,public VariableContainer,I_Observer  {
 public:
   Project();
   ~Project();
+  static Project *GetInstance() { return instance_; }
   void Purge();
   void PurgeInstruments(bool removeFromDisk);
 
@@ -67,5 +79,7 @@ private:
   int tempoNudge_;
   unsigned long lastTap_[MAX_TAP];
   unsigned int tempoTapCount_;
+
+  static Project *instance_;
 };
 #endif

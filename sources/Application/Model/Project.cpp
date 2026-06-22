@@ -15,11 +15,15 @@
 #include "ProjectDatas.h"
 #include <math.h>
 
+Project *Project::instance_ = 0;
+
 Project::Project()
 :Persistent("PROJECT")
 ,midiDeviceList_(0),
 tempoNudge_(0)
 {
+    instance_ = this;
+
     WatchedVariable *tempo = new WatchedVariable("tempo", VAR_TEMPO, 138);
     this->Insert(tempo);
     Variable *masterVolume = new Variable("master", VAR_MASTERVOL, 100, 100);
@@ -44,6 +48,17 @@ tempoNudge_(0)
     Variable *renderMode =
         new Variable("renderMode", VAR_RENDER, renderModes, MAX_RENDER_MODE, 0);
     this->Insert(renderMode);
+
+    // Reverb bus global configs
+    this->Insert(new Variable("rv0 size", VAR_RV0SZ, 64));
+    this->Insert(new Variable("rv0 damp", VAR_RV0DM, 64));
+    this->Insert(new Variable("rv0 wet",  VAR_RV0WT, 64));
+    this->Insert(new Variable("rv1 size", VAR_RV1SZ, 64));
+    this->Insert(new Variable("rv1 damp", VAR_RV1DM, 64));
+    this->Insert(new Variable("rv1 wet",  VAR_RV1WT, 64));
+    this->Insert(new Variable("rv2 size", VAR_RV2SZ, 64));
+    this->Insert(new Variable("rv2 damp", VAR_RV2DM, 64));
+    this->Insert(new Variable("rv2 wet",  VAR_RV2WT, 64));
 
 // Reload the midi device list
 
@@ -72,6 +87,7 @@ tempoNudge_(0)
 } ;
 
 Project::~Project() {
+	instance_ = 0;
 	delete song_ ;
 	delete instrumentBank_ ;
 } ;

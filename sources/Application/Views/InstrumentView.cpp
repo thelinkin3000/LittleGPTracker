@@ -230,6 +230,7 @@ void InstrumentView::fillSampleParameters() {
 	f1=new UIIntVarOffField(position,*v,"table: %2.2X",0x00,0x7F,1,0x10) ;
 	T_SimpleList<UIField>::Insert(f1) ;
 
+    fillEffectParameters(position, instrument);
 } ;
 
 void InstrumentView::fillMidiParameters() {
@@ -265,6 +266,7 @@ void InstrumentView::fillMidiParameters() {
 	f1=new UIIntVarOffField(position,*v,"table: %2.2X",0,0x7F,1,0x10) ;
 	T_SimpleList<UIField>::Insert(f1) ;
 
+    fillEffectParameters(position, instrument);
 } ;
 
 
@@ -487,6 +489,29 @@ void InstrumentView::Update(Observable &o,I_ObservableData *d) {
 	onInstrumentChange() ;
 }
 
+void InstrumentView::fillEffectParameters(GUIPoint &position, I_Instrument *instr) {
+    position._y += 1;
+    UIStaticField *sf = new UIStaticField(position, "--- fx ---");
+    T_SimpleList<UIField>::Insert(sf);
+    position._y += 1;
+
+    Variable *v = instr->FindVariable(SYIP_RVSN);
+    if (!v) v = instr->FindVariable(SIP_RVSN);
+    if (v) {
+        UIIntVarField *f = new UIIntVarField(position, *v, "rev send: %2.2X", 0, 255, 1, 16);
+        T_SimpleList<UIField>::Insert(f);
+        position._y += 1;
+    }
+
+    v = instr->FindVariable(SYIP_RVBS);
+    if (!v) v = instr->FindVariable(SIP_RVBS);
+    if (v) {
+        UIIntVarField *f = new UIIntVarField(position, *v, "rev bus: %d", 0, 2, 1, 1);
+        T_SimpleList<UIField>::Insert(f);
+        position._y += 1;
+    }
+}
+
 void InstrumentView::fillSynthParameters() {
     int i=viewData_->currentInstrument_ ;
     InstrumentBank *bank=viewData_->project_->GetInstrumentBank() ;
@@ -594,4 +619,6 @@ void InstrumentView::fillSynthParameters() {
     v=instr->FindVariable(SYIP_TABL) ;
     f=new UIIntVarOffField(position,*v,"table: %2.2X",0x00,0x7F,1,16) ;
     T_SimpleList<UIField>::Insert(f) ;
+
+    fillEffectParameters(position, instr);
 }

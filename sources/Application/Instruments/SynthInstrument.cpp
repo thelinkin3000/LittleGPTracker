@@ -2,6 +2,7 @@
 #define _USE_MATH_DEFINES
 #include "SynthInstrument.h"
 #include "Filters.h"
+#include "ReverbBus.h"
 #include "System/Console/Trace.h"
 #include <string.h>
 #include <math.h>
@@ -54,6 +55,8 @@ SynthInstrument::SynthInstrument() {
     lfoDest_    = new Variable("lfo dest",     SYIP_LDST, lfoDestNames, SLD_LAST, SLD_PITCH);
     tableAuto_  = new Variable("table auto",   SYIP_TBLA, onOffNames,   2,        0);
     table_      = new Variable("table",        SYIP_TABL, -1);
+    revSend_    = new Variable("rev send",     SYIP_RVSN, 0);
+    revBus_     = new Variable("rev bus",      SYIP_RVBS, 0);
 
     Insert(volume_);
     Insert(osc1Wave_);
@@ -75,6 +78,8 @@ SynthInstrument::SynthInstrument() {
     Insert(lfoDest_);
     Insert(tableAuto_);
     Insert(table_);
+    Insert(revSend_);
+    Insert(revBus_);
 }
 
 SynthInstrument::~SynthInstrument() {
@@ -361,7 +366,18 @@ bool SynthInstrument::Render(int channel, fixed *buffer, int size, bool updateTi
         *out++ = sR << FIXED_SHIFT;
     }
 
-    return v.active;
+    // --- Reverb send ---
+    int iRSend = revSend_->GetInt();
+    int iRBus = revBus_->GetInt();
+    if (iRSend > 0) {
+        if (iRBus >= 0 && iRBus < REVERB_BUS_COUNT) {
+            ReverbBus::Accumulate(iRBus, buffer, size, iRSend);
+        }
+    }
+
+    // Keep channel alive while reverb tail rings
+    bool reverbTail = (iRSend > 0) && ReverbBus::IsBusActive(iRBus);
+    return v.active || reverbTail;
 }
 
 bool SynthInstrument::IsInitialized() {

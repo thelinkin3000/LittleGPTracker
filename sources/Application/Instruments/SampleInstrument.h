@@ -50,6 +50,10 @@ enum SampleInstrumentLoopMode {
 #define SIP_IR_PAD MAKE_FOURCC('I', 'R', 'P', 'D')
 #define SIP_IR_WET MAKE_FOURCC('I', 'R', 'W', 'T')
 
+// Reverb send / bus select
+#define SIP_RVSN MAKE_FOURCC('R','V','S','N')
+#define SIP_RVBS MAKE_FOURCC('R','V','B','S')
+
 #define FB_BUFFER_LENGTH 3500 // (in samples)
 
 class SampleInstrument: public I_Instrument,I_Observer {
@@ -135,6 +139,8 @@ private:
        Variable *printFx_;
        Variable *irPad_;
        Variable *irWet_;
+       Variable *revSend_;
+       Variable *revBus_;
 
        static bool useDirtyDownsampling_;
        char *fxPresets[4];
