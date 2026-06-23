@@ -30,6 +30,20 @@
 #define VAR_RV2DM MAKE_FOURCC('R','V','2','D')
 #define VAR_RV2WT MAKE_FOURCC('R','V','2','W')
 
+// Delay bus global configs (3 buses × time/fb/wet/mode)
+#define VAR_DL0TM MAKE_FOURCC('D','L','0','T')
+#define VAR_DL0FB MAKE_FOURCC('D','L','0','F')
+#define VAR_DL0WT MAKE_FOURCC('D','L','0','W')
+#define VAR_DL0MD MAKE_FOURCC('D','L','0','M')
+#define VAR_DL1TM MAKE_FOURCC('D','L','1','T')
+#define VAR_DL1FB MAKE_FOURCC('D','L','1','F')
+#define VAR_DL1WT MAKE_FOURCC('D','L','1','W')
+#define VAR_DL1MD MAKE_FOURCC('D','L','1','M')
+#define VAR_DL2TM MAKE_FOURCC('D','L','2','T')
+#define VAR_DL2FB MAKE_FOURCC('D','L','2','F')
+#define VAR_DL2WT MAKE_FOURCC('D','L','2','W')
+#define VAR_DL2MD MAKE_FOURCC('D','L','2','M')
+
 #define PROJECT_NUMBER "1"
 #define PROJECT_RELEASE "6"
 #define BUILD_COUNT "0-bacon15"

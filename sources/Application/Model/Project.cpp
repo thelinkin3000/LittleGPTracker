@@ -60,6 +60,21 @@ tempoNudge_(0)
     this->Insert(new Variable("rv2 damp", VAR_RV2DM, 64));
     this->Insert(new Variable("rv2 wet",  VAR_RV2WT, 64));
 
+    // Delay bus global configs
+    static const char *delayModes[] = {"Mono", "PingPong"};
+    this->Insert(new Variable("dl0 time", VAR_DL0TM, 64));
+    this->Insert(new Variable("dl0 fb",   VAR_DL0FB, 64));
+    this->Insert(new Variable("dl0 wet",  VAR_DL0WT, 64));
+    this->Insert(new Variable("dl0 mode", VAR_DL0MD, delayModes, 2, 0));
+    this->Insert(new Variable("dl1 time", VAR_DL1TM, 64));
+    this->Insert(new Variable("dl1 fb",   VAR_DL1FB, 64));
+    this->Insert(new Variable("dl1 wet",  VAR_DL1WT, 64));
+    this->Insert(new Variable("dl1 mode", VAR_DL1MD, delayModes, 2, 0));
+    this->Insert(new Variable("dl2 time", VAR_DL2TM, 64));
+    this->Insert(new Variable("dl2 fb",   VAR_DL2FB, 64));
+    this->Insert(new Variable("dl2 wet",  VAR_DL2WT, 64));
+    this->Insert(new Variable("dl2 mode", VAR_DL2MD, delayModes, 2, 0));
+
 // Reload the midi device list
 
 	buildMidiDeviceList() ;

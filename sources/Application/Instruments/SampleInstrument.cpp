@@ -8,6 +8,7 @@
 #include "Application/Player/SyncMaster.h"
 #include "Application/Instruments/Filters.h"
 #include "Application/Instruments/ReverbBus.h"
+#include "Application/Instruments/DelayBus.h"
 #include "Application/Model/Table.h"
 #include "Services/Audio/Audio.h"
 #include "SampleVariable.h"
@@ -133,6 +134,12 @@ SampleInstrument::SampleInstrument() {
 
      revBus_ = new Variable("rev bus", SIP_RVBS, 0);
      Insert(revBus_);
+
+     delSend_ = new Variable("del send", SIP_DLSN, 0);
+     Insert(delSend_);
+
+     delBus_ = new Variable("del bus", SIP_DLBS, 0);
+     Insert(delBus_);
 
      // Initalize instrument's voices update list
 
@@ -997,7 +1004,19 @@ bool SampleInstrument::Render(int channel,fixed *buffer,int size,bool updateTick
         }
     }
 
-    return somethingToMix ; 
+    // --- Delay send ---
+    int iDSend = delSend_->GetInt();
+    int iDBus = delBus_->GetInt();
+    if (iDSend > 0 && somethingToMix) {
+        if (iDBus >= 0 && iDBus < DELAY_BUS_COUNT) {
+            DelayBus::Accumulate(iDBus, buffer, size, iDSend);
+        }
+    }
+
+    // Keep channel alive while effect tails ring
+    bool reverbTail = (iRSend > 0) && ReverbBus::IsBusActive(iRBus);
+    bool delayTail  = (iDSend > 0) && DelayBus::IsBusActive(iDBus);
+    return somethingToMix || reverbTail || delayTail ; 
 } ;
 
 

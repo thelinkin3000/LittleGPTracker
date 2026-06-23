@@ -3,6 +3,7 @@
 #include "SynthInstrument.h"
 #include "Filters.h"
 #include "ReverbBus.h"
+#include "DelayBus.h"
 #include "System/Console/Trace.h"
 #include <string.h>
 #include <math.h>
@@ -57,6 +58,8 @@ SynthInstrument::SynthInstrument() {
     table_      = new Variable("table",        SYIP_TABL, -1);
     revSend_    = new Variable("rev send",     SYIP_RVSN, 0);
     revBus_     = new Variable("rev bus",      SYIP_RVBS, 0);
+    delSend_    = new Variable("del send",     SYIP_DLSN, 0);
+    delBus_     = new Variable("del bus",      SYIP_DLBS, 0);
 
     Insert(volume_);
     Insert(osc1Wave_);
@@ -80,6 +83,8 @@ SynthInstrument::SynthInstrument() {
     Insert(table_);
     Insert(revSend_);
     Insert(revBus_);
+    Insert(delSend_);
+    Insert(delBus_);
 }
 
 SynthInstrument::~SynthInstrument() {
@@ -375,9 +380,19 @@ bool SynthInstrument::Render(int channel, fixed *buffer, int size, bool updateTi
         }
     }
 
-    // Keep channel alive while reverb tail rings
+    // --- Delay send ---
+    int iDSend = delSend_->GetInt();
+    int iDBus = delBus_->GetInt();
+    if (iDSend > 0) {
+        if (iDBus >= 0 && iDBus < DELAY_BUS_COUNT) {
+            DelayBus::Accumulate(iDBus, buffer, size, iDSend);
+        }
+    }
+
+    // Keep channel alive while effect tails ring
     bool reverbTail = (iRSend > 0) && ReverbBus::IsBusActive(iRBus);
-    return v.active || reverbTail;
+    bool delayTail  = (iDSend > 0) && DelayBus::IsBusActive(iDBus);
+    return v.active || reverbTail || delayTail;
 }
 
 bool SynthInstrument::IsInitialized() {

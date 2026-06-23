@@ -34,6 +34,10 @@
 #define SYIP_RVSN   MAKE_FOURCC('R','V','S','N')
 #define SYIP_RVBS   MAKE_FOURCC('R','V','B','S')
 
+// Delay send / bus select
+#define SYIP_DLSN   MAKE_FOURCC('D','L','S','N')
+#define SYIP_DLBS   MAKE_FOURCC('D','L','B','S')
+
 enum SynthWaveform { SWF_SINE=0, SWF_TRI, SWF_SAW, SWF_SQUARE, SWF_LAST };
 enum SynthOsc2Wave { SO2_SINE=0, SO2_TRI, SO2_SAW, SO2_SQUARE, SO2_OFF, SO2_LAST };
 enum SynthLfoDest  { SLD_PITCH=0, SLD_FCUT, SLD_AMP, SLD_LAST };
@@ -110,6 +114,8 @@ private:
     Variable *tableAuto_;
     Variable *revSend_;
     Variable *revBus_;
+    Variable *delSend_;
+    Variable *delBus_;
 
     static fixed noteTable_[128];
     static fixed sineTable_[256];

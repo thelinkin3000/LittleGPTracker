@@ -196,36 +196,6 @@ ProjectView::ProjectView(GUIWindow &w,ViewData *data):FieldView(w,data) {
         T_SimpleList<UIField>::Insert(field);
     }
 
-    position._y += 1;
-    UIStaticField *sf = new UIStaticField(position, "--- reverb ---");
-    T_SimpleList<UIField>::Insert(sf);
-
-    // Compact reverb: 3 parameters per row to save screen space
-    auto addReverbRow = [&](int fourccSize, int fourccDamp, int fourccWet, const char *label) {
-        position._y += 1;
-        Variable *rvSz = project_->FindVariable(fourccSize);
-        Variable *rvDm = project_->FindVariable(fourccDamp);
-        Variable *rvWt = project_->FindVariable(fourccWet);
-        if (rvSz && rvDm && rvWt) {
-            UIStaticField *lab = new UIStaticField(position, label);
-            T_SimpleList<UIField>::Insert(lab);
-            position._x += 5;
-            UIIntVarField *f = new UIIntVarField(position, *rvSz, "%2.2X", 0, 255, 1, 16);
-            T_SimpleList<UIField>::Insert(f);
-            position._x += 4;
-            f = new UIIntVarField(position, *rvDm, "%2.2X", 0, 255, 1, 16);
-            T_SimpleList<UIField>::Insert(f);
-            position._x += 4;
-            f = new UIIntVarField(position, *rvWt, "%2.2X", 0, 255, 1, 16);
-            T_SimpleList<UIField>::Insert(f);
-            position._x -= 13;
-        }
-    };
-
-    addReverbRow(VAR_RV0SZ, VAR_RV0DM, VAR_RV0WT, "rv0:");
-    addReverbRow(VAR_RV1SZ, VAR_RV1DM, VAR_RV1WT, "rv1:");
-    addReverbRow(VAR_RV2SZ, VAR_RV2DM, VAR_RV2WT, "rv2:");
-
     position._y += 2;
     a1 = new UIActionField("Exit", ACTION_QUIT, position);
     a1->AddObserver(*this);

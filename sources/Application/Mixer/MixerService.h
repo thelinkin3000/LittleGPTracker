@@ -15,6 +15,7 @@
 #include "Services/Audio/AudioOut.h"
 #include "MixBus.h"
 #include "Application/Instruments/ReverbBus.h"
+#include "Application/Instruments/DelayBus.h"
 
 enum MixerServiceRenderMode {
     MSRM_PLAYBACK,
@@ -45,10 +46,11 @@ public:
 
 	virtual void Update(Observable &o,I_ObservableData *d) ;	
 
-    void OnPlayerStart() ;
-    void OnPlayerStop() ;
+  void OnPlayerStart() ;
+  void OnPlayerStop() ;
 
     void SyncReverbConfigs();
+    void SyncDelayConfigs();
 
     bool Clipped() ;
     void SetPregain(int);
@@ -73,6 +75,7 @@ private:
   MixBus master_;
   MixBus bus_[MAX_BUS_COUNT];
   ReverbBus reverbBus_;
+  DelayBus delayBus_;
   MixerServiceRenderMode mode_;
 #ifdef SDL3
   SDL_Mutex *sync_;

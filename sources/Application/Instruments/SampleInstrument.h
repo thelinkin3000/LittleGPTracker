@@ -54,6 +54,10 @@ enum SampleInstrumentLoopMode {
 #define SIP_RVSN MAKE_FOURCC('R','V','S','N')
 #define SIP_RVBS MAKE_FOURCC('R','V','B','S')
 
+// Delay send / bus select
+#define SIP_DLSN MAKE_FOURCC('D','L','S','N')
+#define SIP_DLBS MAKE_FOURCC('D','L','B','S')
+
 #define FB_BUFFER_LENGTH 3500 // (in samples)
 
 class SampleInstrument: public I_Instrument,I_Observer {
@@ -139,10 +143,12 @@ private:
        Variable *printFx_;
        Variable *irPad_;
        Variable *irWet_;
-       Variable *revSend_;
-       Variable *revBus_;
+        Variable *revSend_;
+        Variable *revBus_;
+        Variable *delSend_;
+        Variable *delBus_;
 
-       static bool useDirtyDownsampling_;
+        static bool useDirtyDownsampling_;
        char *fxPresets[4];
 } ;
 #endif

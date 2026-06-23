@@ -127,7 +127,7 @@ void InstrumentView::fillSampleParameters() {
 	f1=new UIIntVarField(position,*v,"detune: %2.2X",0,255,1,0x10) ;
 	T_SimpleList<UIField>::Insert(f1) ;
 
-    position._y += 2;
+    position._y += 1;
     v=instrument->FindVariable(SIP_CRUSH);
 	f1=new UIIntVarField(position,*v,"crush: %d",1,0x10,1,4) ;
 	T_SimpleList<UIField>::Insert(f1) ;
@@ -221,7 +221,7 @@ void InstrumentView::fillSampleParameters() {
 	T_SimpleList<UIField>::Insert(f1) ;
 
 	v=instrument->FindVariable(SIP_TABLEAUTO) ;
-	position._y+=2 ;
+	position._y+=1 ;
 	UIIntVarField *f2=new UIIntVarField(position,*v,"automation: %s",0,1,1,1) ;
 	T_SimpleList<UIField>::Insert(f2) ;
 
@@ -491,23 +491,32 @@ void InstrumentView::Update(Observable &o,I_ObservableData *d) {
 
 void InstrumentView::fillEffectParameters(GUIPoint &position, I_Instrument *instr) {
     position._y += 1;
-    UIStaticField *sf = new UIStaticField(position, "--- fx ---");
-    T_SimpleList<UIField>::Insert(sf);
-    position._y += 1;
 
     Variable *v = instr->FindVariable(SYIP_RVSN);
     if (!v) v = instr->FindVariable(SIP_RVSN);
-    if (v) {
-        UIIntVarField *f = new UIIntVarField(position, *v, "rev send: %2.2X", 0, 255, 1, 16);
+    Variable *v2 = instr->FindVariable(SYIP_RVBS);
+    if (!v2) v2 = instr->FindVariable(SIP_RVBS);
+    if (v && v2) {
+        UIIntVarField *f = new UIIntVarField(position, *v, "rev: %2.2X", 0, 255, 1, 16);
         T_SimpleList<UIField>::Insert(f);
+        position._x += 10;
+        f = new UIIntVarField(position, *v2, "bus:%d", 0, 2, 1, 1);
+        T_SimpleList<UIField>::Insert(f);
+        position._x -= 10;
         position._y += 1;
     }
 
-    v = instr->FindVariable(SYIP_RVBS);
-    if (!v) v = instr->FindVariable(SIP_RVBS);
-    if (v) {
-        UIIntVarField *f = new UIIntVarField(position, *v, "rev bus: %d", 0, 2, 1, 1);
+    v = instr->FindVariable(SYIP_DLSN);
+    if (!v) v = instr->FindVariable(SIP_DLSN);
+    v2 = instr->FindVariable(SYIP_DLBS);
+    if (!v2) v2 = instr->FindVariable(SIP_DLBS);
+    if (v && v2) {
+        UIIntVarField *f = new UIIntVarField(position, *v, "del: %2.2X", 0, 255, 1, 16);
         T_SimpleList<UIField>::Insert(f);
+        position._x += 10;
+        f = new UIIntVarField(position, *v2, "bus:%d", 0, 2, 1, 1);
+        T_SimpleList<UIField>::Insert(f);
+        position._x -= 10;
         position._y += 1;
     }
 }

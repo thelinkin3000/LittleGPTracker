@@ -88,7 +88,7 @@ void View::drawMap() {
         DrawString(pos._x,pos._y,buffer,props) ;
 		pos._y++ ;		
 		//row3
-		sprintf(buffer,"  TT");
+		sprintf(buffer,"E TT");
         DrawString(pos._x,pos._y,buffer,props) ;
 
 		//draw current screen on map
@@ -127,6 +127,10 @@ void View::drawMap() {
 		case VT_GROOVE:
 			pos._x+=2;
 	        DrawString(pos._x,pos._y,"G",props) ;
+			break;
+		case VT_EFFECTS:
+			pos._y+=2;
+	        DrawString(pos._x,pos._y,"E",props) ;
 			break;
 		default: //VT_SONG
 			pos._y+=1;

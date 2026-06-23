@@ -46,6 +46,7 @@ bool MixerService::Init() {
 		master_.Insert(bus_[i]);
 	}
 	master_.Insert(reverbBus_);
+	master_.Insert(delayBus_);
 
 	bool result = false;
 	if (out_) {
@@ -202,6 +203,7 @@ void MixerService::toggleRendering(bool enable) {
 void MixerService::OnPlayerStart() {
 	toggleRendering(true) ;
 	SyncReverbConfigs();
+	SyncDelayConfigs();
 } ;
 
 void MixerService::OnPlayerStop() {
@@ -226,6 +228,30 @@ void MixerService::SyncReverbConfigs() {
         cfg.damp = vDamp ? vDamp->GetInt() : 64;
         cfg.wet  = vWet  ? vWet->GetInt()  : 64;
         ReverbBus::SetBusConfig(b, cfg);
+    }
+}
+
+void MixerService::SyncDelayConfigs() {
+    Project *project = Project::GetInstance();
+    if (!project) return;
+
+    static const FourCC timeIDs[3] = { VAR_DL0TM, VAR_DL1TM, VAR_DL2TM };
+    static const FourCC fbIDs[3]   = { VAR_DL0FB, VAR_DL1FB, VAR_DL2FB };
+    static const FourCC wetIDs[3]  = { VAR_DL0WT, VAR_DL1WT, VAR_DL2WT };
+    static const FourCC modeIDs[3] = { VAR_DL0MD, VAR_DL1MD, VAR_DL2MD };
+
+    for (int b = 0; b < 3; b++) {
+        Variable *vTime = project->FindVariable(timeIDs[b]);
+        Variable *vFb   = project->FindVariable(fbIDs[b]);
+        Variable *vWet  = project->FindVariable(wetIDs[b]);
+        Variable *vMode = project->FindVariable(modeIDs[b]);
+
+        DelayBusConfig cfg;
+        cfg.time     = vTime ? vTime->GetInt() : 64;
+        cfg.feedback = vFb   ? vFb->GetInt()   : 64;
+        cfg.wet      = vWet  ? vWet->GetInt()  : 64;
+        cfg.mode     = vMode ? vMode->GetInt() : 0;
+        DelayBus::SetBusConfig(b, cfg);
     }
 }
 

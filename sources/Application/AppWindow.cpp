@@ -83,6 +83,7 @@ AppWindow::AppWindow(I_GUIWindowImp &imp) : GUIWindow(imp) {
     _tableView = 0;
     _nullView = 0;
     _mixerView = 0;
+    _effectsView = 0;
     _grooveView = 0;
     _closeProject = 0;
     _loadAfterSaveAsProject = 0;
@@ -387,6 +388,9 @@ void AppWindow::LoadProject(const Path &p) {
     _mixerView = new MixerView((*this), _viewData);
     _mixerView->AddObserver(*this);
 
+    _effectsView = new EffectsView((*this), _viewData);
+    _effectsView->AddObserver(*this);
+
     _currentView = _songView;
     _currentView->OnFocus();
 
@@ -422,6 +426,7 @@ void AppWindow::CloseProject() {
     SAFE_DELETE(_projectView);
     SAFE_DELETE(_instrumentView);
     SAFE_DELETE(_tableView);
+    SAFE_DELETE(_effectsView);
 
     UIController *controller = UIController::GetInstance();
     controller->Reset();
@@ -563,10 +568,12 @@ void AppWindow::Update(Observable &o, I_ObservableData *d) {
         case VT_GROOVE:
             _currentView = _grooveView;
             break;
-            /*			case VT_MIXER:
-                        _currentView=_mixerView ;
-            */
-            break;
+            /* case VT_MIXER:
+                _currentView = _mixerView;
+                break; */
+            case VT_EFFECTS:
+                _currentView = _effectsView;
+                break;
         }
         _currentView->SetFocus(*vt);
         _isDirty = true;

@@ -451,6 +451,7 @@
     <ClCompile Include="..\sources\Application\views\ListSelectView.cpp" />
     <ClCompile Include="..\sources\Application\Views\MixerView.cpp" />
     <ClCompile Include="..\sources\Application\Views\NullView.cpp" />
+    <ClCompile Include="..\sources\Application\Views\EffectsView.cpp" />
     <ClCompile Include="..\sources\Application\views\PhraseView.cpp" />
     <ClCompile Include="..\sources\Application\views\ProjectView.cpp" />
     <ClCompile Include="..\sources\Application\views\SongView.cpp" />
@@ -490,6 +491,7 @@
     <ClCompile Include="..\sources\Application\Instruments\CommandList.cpp" />
     <ClCompile Include="..\sources\Application\Instruments\Filters.cpp" />
     <ClCompile Include="..\sources\Application\Instruments\ReverbBus.cpp" />
+    <ClCompile Include="..\sources\Application\Instruments\DelayBus.cpp" />
     <ClCompile Include="..\sources\Application\Instruments\InstrumentBank.cpp" />
     <ClCompile Include="..\sources\Application\Instruments\MidiInstrument.cpp" />
     <ClCompile Include="..\sources\Application\Instruments\SampleInstrument.cpp" />
@@ -634,6 +636,8 @@
     <ClInclude Include="..\sources\Application\Player\TablePlayback.h" />
     <ClInclude Include="..\sources\Application\Instruments\CommandList.h" />
     <ClInclude Include="..\sources\Application\Instruments\Filters.h" />
+    <ClInclude Include="..\sources\Application\Instruments\ReverbBus.h" />
+    <ClInclude Include="..\sources\Application\Instruments\DelayBus.h" />
     <ClInclude Include="..\sources\Application\Instruments\I_Instrument.h" />
     <ClInclude Include="..\sources\Application\Instruments\I_SRPUpdater.h" />
     <ClInclude Include="..\sources\Application\Instruments\InstrumentBank.h" />

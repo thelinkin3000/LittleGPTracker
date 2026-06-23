@@ -873,6 +873,14 @@
 						>
 					</File>
 					<File
+						RelativePath="..\sources\Application\Views\EffectsView.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\sources\Application\Views\EffectsView.h"
+						>
+					</File>
+					<File
 						RelativePath="..\sources\Application\views\PhraseView.cpp"
 						>
 					</File>
@@ -1166,6 +1174,22 @@
 					</File>
 					<File
 						RelativePath="..\sources\Application\Instruments\Filters.h"
+						>
+					</File>
+					<File
+						RelativePath="..\sources\Application\Instruments\ReverbBus.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\sources\Application\Instruments\ReverbBus.h"
+						>
+					</File>
+					<File
+						RelativePath="..\sources\Application\Instruments\DelayBus.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\sources\Application\Instruments\DelayBus.h"
 						>
 					</File>
 					<File
